@@ -8,152 +8,20 @@ import RecommendationPreview from './components/RecommendationPreview';
 import UpcomingDeadlines from './components/UpcomingDeadlines';
 import QuickActions from './components/QuickActions';
 import ActivityFeed from './components/ActivityFeed';
+import { userAPI, internshipAPI } from '../../services/api';
 
 const MainDashboard = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({
-    name: "Alex Johnson",
-    profileCompletion: 75,
-    email: "alex.johnson@email.com"
-  });
-
-  // Mock application statistics
+  const [userData, setUserData] = useState({ name: '', profileCompletion: 0, email: '' });
+  const [recommendations, setRecommendations] = useState([]);
+  const [internships, setInternships] = useState([]);
+  const [deadlines, setDeadlines] = useState([]);
+  const [activities, setActivities] = useState([]);
   const applicationStats = [
-    {
-      title: "Applications Submitted",
-      value: "12",
-      icon: "FileText",
-      color: "blue",
-      trend: { type: "up", value: "+3 this week" }
-    },
-    {
-      title: "In Progress",
-      value: "8",
-      icon: "Clock",
-      color: "yellow",
-      trend: { type: "up", value: "+2 this week" }
-    },
-    {
-      title: "Interviews Scheduled",
-      value: "3",
-      icon: "Calendar",
-      color: "purple",
-      trend: { type: "up", value: "+1 this week" }
-    },
-    {
-      title: "Offers Received",
-      value: "1",
-      icon: "CheckCircle",
-      color: "green",
-      trend: { type: "up", value: "New!" }
-    }
-  ];
-
-  // Mock recommended internships
-  const mockRecommendations = [
-    {
-      id: 1,
-      title: "Software Engineering Intern",
-      company: "TechCorp Inc.",
-      location: "San Francisco, CA",
-      duration: "3 months",
-      stipend: "$2,500/month",
-      matchPercentage: 95,
-      companyLogo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop&crop=center"
-    },
-    {
-      id: 2,
-      title: "Data Science Intern",
-      company: "DataFlow Solutions",
-      location: "New York, NY",
-      duration: "4 months",
-      stipend: "$3,000/month",
-      matchPercentage: 88,
-      companyLogo: "https://images.unsplash.com/photo-1549923746-c502d488b3ea?w=100&h=100&fit=crop&crop=center"
-    },
-    {
-      id: 3,
-      title: "Frontend Developer Intern",
-      company: "WebDesign Pro",
-      location: "Austin, TX",
-      duration: "3 months",
-      stipend: "$2,200/month",
-      matchPercentage: 82,
-      companyLogo: "https://images.unsplash.com/photo-1572021335469-31706a17aaef?w=100&h=100&fit=crop&crop=center"
-    }
-  ];
-
-  // Mock upcoming deadlines
-  const mockDeadlines = [
-    {
-      id: 1,
-      title: "Application Deadline",
-      company: "Google",
-      date: "2025-01-22",
-      type: "application"
-    },
-    {
-      id: 2,
-      title: "Interview Round 1",
-      company: "Microsoft",
-      date: "2025-01-25",
-      type: "interview"
-    },
-    {
-      id: 3,
-      title: "Technical Assessment",
-      company: "Amazon",
-      date: "2025-01-28",
-      type: "application"
-    },
-    {
-      id: 4,
-      title: "Final Interview",
-      company: "Apple",
-      date: "2025-02-02",
-      type: "interview"
-    },
-    {
-      id: 5,
-      title: "Application Deadline",
-      company: "Netflix",
-      date: "2025-02-05",
-      type: "application"
-    }
-  ];
-
-  // Mock recent activities
-  const mockActivities = [
-    {
-      id: 1,
-      type: "offer",
-      message: "Congratulations! You received an offer from TechCorp Inc.",
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000)
-    },
-    {
-      id: 2,
-      type: "interview",
-      message: "Interview scheduled with DataFlow Solutions for January 25th",
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000)
-    },
-    {
-      id: 3,
-      type: "application",
-      message: "Application submitted to WebDesign Pro",
-      timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: 4,
-      type: "profile",
-      message: "Profile updated with new skills and certifications",
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-    },
-    {
-      id: 5,
-      type: "application",
-      message: "Application submitted to Amazon Web Services",
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
-    }
+    { title: 'Internships Available', value: String(internships?.length || 0), icon: 'Briefcase', color: 'blue', trend: { type: 'up', value: '' } },
+    { title: 'Skills Added', value: String((userData?.profile?.skills || []).length), icon: 'Code', color: 'yellow', trend: { type: 'up', value: '' } },
+    { title: 'Sector', value: userData?.profile?.sector || '—', icon: 'Building2', color: 'purple', trend: { type: 'up', value: '' } },
+    { title: 'Location', value: userData?.profile?.location || '—', icon: 'MapPin', color: 'green', trend: { type: 'up', value: '' } },
   ];
 
   const handleCompleteProfile = () => {
@@ -183,13 +51,45 @@ const MainDashboard = () => {
       navigate('/user-login');
       return;
     }
-
-    // Load user data from localStorage or API
-    const savedUserData = localStorage.getItem('userData');
-    if (savedUserData) {
-      setUserData(JSON.parse(savedUserData));
-    }
+    const load = async () => {
+      try {
+        // Load profile
+        const profileRes = await userAPI.getProfile();
+        if (profileRes?.user) {
+          const user = profileRes.user;
+          setUserData({
+            name: user?.name,
+            email: user?.email,
+            profile: user?.profile || {},
+            profileCompletion: calcProfileCompletion(user?.profile || {}),
+          });
+        }
+        // Load recommendations (requires profile)
+        const recRes = await internshipAPI.getRecommendations();
+        setRecommendations(recRes?.recommendations || []);
+        // Load internships list
+        const allRes = await internshipAPI.getAllInternships();
+        setInternships(allRes?.internships || []);
+        // For now, deadlines & activities can be derived or left empty
+        setDeadlines([]);
+        setActivities([]);
+      } catch (e) {
+        console.error('Dashboard load error', e);
+      }
+    };
+    load();
   }, [navigate]);
+
+  const calcProfileCompletion = (profile) => {
+    if (!profile) return 0;
+    const fields = ['education', 'skills', 'sector', 'location'];
+    const filled = fields.reduce((acc, key) => {
+      const val = profile[key];
+      if (Array.isArray(val)) return acc + (val.length > 0 ? 1 : 0);
+      return acc + (val ? 1 : 0);
+    }, 0);
+    return Math.round((filled / fields.length) * 100);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -222,7 +122,7 @@ const MainDashboard = () => {
           {/* Left Column - Recommendations and Quick Actions */}
           <div className="lg:col-span-2 space-y-8">
             <RecommendationPreview
-              recommendations={mockRecommendations}
+              recommendations={recommendations}
               onViewAll={handleViewAllRecommendations}
             />
             
@@ -232,11 +132,11 @@ const MainDashboard = () => {
           {/* Right Column - Deadlines and Activity */}
           <div className="space-y-8">
             <UpcomingDeadlines
-              deadlines={mockDeadlines}
+              deadlines={deadlines}
               onViewCalendar={handleViewCalendar}
             />
             
-            <ActivityFeed activities={mockActivities} />
+            <ActivityFeed activities={activities} />
           </div>
         </div>
 
@@ -245,16 +145,16 @@ const MainDashboard = () => {
           {/* Mobile swipeable recommendations preview */}
           <div className="overflow-x-auto">
             <div className="flex space-x-4 pb-4">
-              {mockRecommendations?.map((internship) => (
+              {recommendations?.map((internship) => (
                 <div
-                  key={internship?.id}
+                  key={internship?._id || internship?.id}
                   className="flex-shrink-0 w-72 bg-card border border-border rounded-lg p-4"
                 >
                   <div className="flex items-center space-x-3 mb-3">
                     <div className="w-10 h-10 rounded-lg overflow-hidden">
                       <img
-                        src={internship?.companyLogo}
-                        alt={internship?.company}
+                        src={internship?.companyLogo || '/assets/images/download.png'}
+                        alt={internship?.company || internship?.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {
                           e.target.src = '/assets/images/no_image.png';
@@ -266,7 +166,7 @@ const MainDashboard = () => {
                         {internship?.title}
                       </h3>
                       <p className="text-xs text-muted-foreground">
-                        {internship?.company}
+                        {internship?.company || '—'}
                       </p>
                     </div>
                   </div>
@@ -275,7 +175,7 @@ const MainDashboard = () => {
                       {internship?.location}
                     </span>
                     <div className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                      {internship?.matchPercentage}% match
+                    {typeof internship?.matchScore === 'number' ? `${Math.min(100, Math.round(internship?.matchScore * 10))}% match` : `${internship?.matchPercentage}% match`}
                     </div>
                   </div>
                 </div>

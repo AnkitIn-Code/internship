@@ -393,10 +393,6 @@ const InternshipRecommendations = () => {
             </div>
             
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <Icon name="Sparkles" size={16} className="text-primary" />
-                <span>Powered by AI</span>
-              </div>
               
               <Button
                 variant="outline"

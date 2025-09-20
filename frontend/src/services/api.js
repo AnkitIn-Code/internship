@@ -9,7 +9,8 @@ const getAIApiKey = () => {
 // Auth API calls
 export const authAPI = {
   register: async (userData) => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    // Backend uses /api/auth/signup
+    const response = await fetch(`${API_BASE_URL}/auth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -35,7 +36,7 @@ export const authAPI = {
 export const userAPI = {
   getProfile: async () => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ export const userAPI = {
 
   updateProfile: async (profileData) => {
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_BASE_URL}/user/profile`, {
+    const response = await fetch(`${API_BASE_URL}/profile`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -56,37 +57,18 @@ export const userAPI = {
     });
     return response.json();
   },
-
-  addSkills: async (skills) => {
-    const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_BASE_URL}/user/skills`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ skills }),
-    });
-    return response.json();
-  },
 };
 
 // Internship API calls with AI recommendations
 export const internshipAPI = {
-  getRecommendations: async (userSkills) => {
+  getRecommendations: async () => {
     const token = localStorage.getItem('authToken');
-    const aiApiKey = getAIApiKey();
-    
-    const response = await fetch(`${API_BASE_URL}/internships/recommendations`, {
-      method: 'POST',
+    // Backend provides GET /api/recommendations for authenticated user
+    const response = await fetch(`${API_BASE_URL}/recommendations`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        skills: userSkills,
-        aiApiKey: aiApiKey 
-      }),
     });
     return response.json();
   },
@@ -102,18 +84,7 @@ export const internshipAPI = {
     return response.json();
   },
 
-  applyToInternship: async (internshipId, applicationData) => {
-    const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_BASE_URL}/internships/${internshipId}/apply`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(applicationData),
-    });
-    return response.json();
-  },
+  // No apply endpoint in backend currently
 };
 
 // Settings API for AI configuration

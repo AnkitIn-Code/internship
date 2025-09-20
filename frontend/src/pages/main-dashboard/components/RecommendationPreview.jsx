@@ -28,13 +28,13 @@ const RecommendationPreview = ({ recommendations, onViewAll }) => {
       <div className="space-y-4">
         {recommendations?.slice(0, 3)?.map((internship) => (
           <div
-            key={internship?.id}
+            key={internship?._id || internship?.id}
             className="flex items-center space-x-4 p-4 rounded-lg border border-border hover:border-primary/30 hover:bg-muted/50 transition-all duration-200 cursor-pointer"
           >
             <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
               <Image
-                src={internship?.companyLogo}
-                alt={internship?.company}
+                src={internship?.companyLogo || '/assets/images/download.png'}
+                alt={internship?.company || internship?.title}
                 className="w-full h-full object-cover"
               />
             </div>
@@ -44,28 +44,28 @@ const RecommendationPreview = ({ recommendations, onViewAll }) => {
                 {internship?.title}
               </h3>
               <p className="text-sm text-muted-foreground truncate">
-                {internship?.company} • {internship?.location}
+                {(internship?.company || '—')} • {internship?.location}
               </p>
               <div className="flex items-center space-x-2 mt-1">
                 <div className="flex items-center space-x-1">
                   <Icon name="Clock" size={12} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{internship?.duration}</span>
+                  <span className="text-xs text-muted-foreground">{internship?.duration || '—'}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Icon name="DollarSign" size={12} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{internship?.stipend}</span>
+                  <span className="text-xs text-muted-foreground">{internship?.stipend || ''}</span>
                 </div>
               </div>
             </div>
             
             <div className="flex items-center space-x-2 flex-shrink-0">
               <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                internship?.matchPercentage >= 90 
+                (typeof internship?.matchScore === 'number' ? internship?.matchScore >= 9 : internship?.matchPercentage >= 90)
                   ? 'bg-green-100 text-green-700'
-                  : internship?.matchPercentage >= 75
+                  : (typeof internship?.matchScore === 'number' ? internship?.matchScore >= 7.5 : internship?.matchPercentage >= 75)
                   ? 'bg-blue-100 text-blue-700' :'bg-yellow-100 text-yellow-700'
               }`}>
-                {internship?.matchPercentage}% match
+                {typeof internship?.matchScore === 'number' ? `${Math.min(100, Math.round(internship?.matchScore * 10))}% match` : `${internship?.matchPercentage}% match`}
               </div>
               <Icon name="ChevronRight" size={16} className="text-muted-foreground" />
             </div>
