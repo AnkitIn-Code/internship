@@ -30,169 +30,29 @@ const InternshipRecommendations = () => {
   const [selectedInternships, setSelectedInternships] = useState([]);
   const [isComparisonModalOpen, setIsComparisonModalOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [allInternships, setAllInternships] = useState([]);
   const [internships, setInternships] = useState([]);
 
-  // Mock internship data
-  const mockInternships = [
-    {
-      id: 1,
-      title: "Frontend Developer Intern",
-      company: {
-        name: "TechCorp Solutions",
-        logo: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=100&h=100&fit=crop&crop=center",
-        rating: 4.5,
-        reviewCount: 234,
-        size: "500-1000",
-        industry: "Technology",
-        description: "TechCorp Solutions is a leading technology company specializing in innovative software solutions for enterprises worldwide. We focus on creating cutting-edge applications that transform businesses."
-      },
-      location: "Bangalore",
-      duration: "3-6 months",
-      stipend: 25000,
-      applicationDeadline: "2025-10-15",
-      matchPercentage: 92,
-      requiredSkills: ["React", "JavaScript", "HTML/CSS", "Git", "REST APIs"],
-      qualifications: [
-        "Currently pursuing or recently completed degree in Computer Science or related field",
-        "Strong foundation in JavaScript and modern web technologies",
-        "Experience with React.js framework",
-        "Understanding of responsive design principles",
-        "Good problem-solving and communication skills"
-      ],
-      description: `Join our dynamic frontend development team and work on exciting projects that impact millions of users worldwide.\n\nAs a Frontend Developer Intern, you'll collaborate with experienced developers to build responsive, user-friendly web applications using modern technologies like React, TypeScript, and CSS frameworks.\n\nYou'll gain hands-on experience in agile development methodologies, code reviews, and best practices in frontend development.`,
-      aiReasoning: "Perfect match based on your React and JavaScript skills. Your portfolio projects demonstrate strong frontend capabilities, and this role aligns with your career goals in web development.",
-      benefits: ["Flexible working hours", "Mentorship program", "Learning stipend", "Team outings"],
-      postedDaysAgo: 2,
-      isSaved: false
-    },
-    {
-      id: 2,
-      title: "Data Science Intern",
-      company: {
-        name: "DataInsights Analytics",
-        logo: "https://images.unsplash.com/photo-1551434678-e076c223a692?w=100&h=100&fit=crop&crop=center",
-        rating: 4.2,
-        reviewCount: 156,
-        size: "100-500",
-        industry: "Analytics",
-        description: "DataInsights Analytics helps businesses make data-driven decisions through advanced analytics and machine learning solutions."
-      },
-      location: "Mumbai",
-      duration: "6 months",
-      stipend: 30000,
-      applicationDeadline: "2025-10-20",
-      matchPercentage: 85,
-      requiredSkills: ["Python", "SQL", "Machine Learning", "Pandas", "Matplotlib"],
-      qualifications: [
-        "Background in Statistics, Mathematics, Computer Science, or related field",
-        "Proficiency in Python programming language",
-        "Experience with data manipulation libraries (Pandas, NumPy)",
-        "Basic understanding of machine learning concepts",
-        "Strong analytical and problem-solving skills"
-      ],
-      description: `Work with our data science team to extract insights from large datasets and build predictive models.\n\nYou'll be involved in the complete data science pipeline - from data collection and cleaning to model development and deployment.\n\nThis internship offers exposure to real-world business problems and the opportunity to work with cutting-edge tools and technologies in the data science ecosystem.`,
-      aiReasoning: "Strong match due to your Python skills and coursework in statistics. Your academic projects in data analysis make you a great fit for this role.",
-      benefits: ["Remote work options", "Conference attendance", "Certification support", "Performance bonus"],
-      postedDaysAgo: 1,
-      isSaved: true
-    },
-    {
-      id: 3,
-      title: "Mobile App Development Intern",
-      company: {
-        name: "AppVenture Studios",
-        logo: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=100&h=100&fit=crop&crop=center",
-        rating: 4.7,
-        reviewCount: 89,
-        size: "50-100",
-        industry: "Mobile Technology",
-        description: "AppVenture Studios creates innovative mobile applications that solve real-world problems and enhance user experiences."
-      },
-      location: "Hyderabad",
-      duration: "4 months",
-      stipend: 22000,
-      applicationDeadline: "2025-10-25",
-      matchPercentage: 78,
-      requiredSkills: ["React Native", "JavaScript", "Mobile UI/UX", "Firebase", "Git"],
-      qualifications: [
-        "Knowledge of mobile app development frameworks",
-        "Experience with React Native or Flutter",
-        "Understanding of mobile UI/UX principles",
-        "Familiarity with version control systems",
-        "Passion for mobile technology and user experience"
-      ],
-      description: `Join our mobile development team to create innovative apps that reach thousands of users.\n\nYou'll work on both iOS and Android platforms using React Native, contributing to feature development, bug fixes, and performance optimization.\n\nThis role offers excellent exposure to the complete mobile app development lifecycle, from concept to app store deployment.`,
-      aiReasoning: "Good match based on your JavaScript knowledge and interest in mobile development. Your React experience will translate well to React Native.",
-      benefits: ["Device allowance", "App store credits", "Flexible hours", "Team lunch"],
-      postedDaysAgo: 3,
-      isSaved: false
-    },
-    {
-      id: 4,
-      title: "UI/UX Design Intern",
-      company: {
-        name: "DesignCraft Agency",
-        logo: "https://images.unsplash.com/photo-1558655146-d09347e92766?w=100&h=100&fit=crop&crop=center",
-        rating: 4.4,
-        reviewCount: 67,
-        size: "20-50",
-        industry: "Design",
-        description: "DesignCraft Agency specializes in creating beautiful, user-centered digital experiences for brands across various industries."
-      },
-      location: "Pune",
-      duration: "3 months",
-      stipend: 18000,
-      applicationDeadline: "2025-11-01",
-      matchPercentage: 71,
-      requiredSkills: ["Figma", "Adobe Creative Suite", "User Research", "Prototyping", "Design Systems"],
-      qualifications: [
-        "Portfolio demonstrating UI/UX design skills",
-        "Proficiency in design tools like Figma or Adobe XD",
-        "Understanding of user-centered design principles",
-        "Basic knowledge of HTML/CSS is a plus",
-        "Strong visual communication skills"
-      ],
-      description: `Work alongside our design team to create compelling user experiences for web and mobile applications.\n\nYou'll be involved in user research, wireframing, prototyping, and visual design while learning industry best practices.\n\nThis internship provides hands-on experience with real client projects and exposure to the complete design process.`,
-      aiReasoning: "Moderate match based on your design coursework and creative portfolio. Your attention to detail and visual skills align with this role.",
-      benefits: ["Design software licenses", "Portfolio review sessions", "Client interaction", "Creative workshops"],
-      postedDaysAgo: 5,
-      isSaved: false
-    },
-    {
-      id: 5,
-      title: "Backend Developer Intern",
-      company: {
-        name: "CloudTech Systems",
-        logo: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=100&fit=crop&crop=center",
-        rating: 4.6,
-        reviewCount: 198,
-        size: "200-500",
-        industry: "Cloud Computing",
-        description: "CloudTech Systems provides scalable cloud infrastructure solutions and backend services for modern applications."
-      },
-      location: "Chennai",
-      duration: "6 months",
-      stipend: 28000,
-      applicationDeadline: "2025-10-30",
-      matchPercentage: 88,
-      requiredSkills: ["Node.js", "Express.js", "MongoDB", "AWS", "Docker"],
-      qualifications: [
-        "Strong programming skills in JavaScript or Python",
-        "Experience with server-side development",
-        "Understanding of databases and API design",
-        "Familiarity with cloud platforms (AWS/Azure/GCP)",
-        "Knowledge of containerization technologies"
-      ],
-      description: `Join our backend development team to build robust, scalable server-side applications and APIs.\n\nYou'll work with modern technologies like Node.js, Express, and cloud services to create high-performance backend systems.\n\nThis role offers excellent exposure to microservices architecture, database design, and cloud deployment strategies.`,
-      aiReasoning: "Excellent match given your Node.js experience and cloud computing coursework. Your API development projects demonstrate relevant skills for this position.",
-      benefits: ["Cloud certification support", "Tech conference tickets", "Flexible remote work", "Health insurance"],
-      postedDaysAgo: 4,
-      isSaved: false
-    }
-  ];
-
   useEffect(() => {
-    setInternships(mockInternships);
+    const fetchDiscover = async () => {
+      try {
+        const token = localStorage.getItem('authToken');
+        const res = await fetch(`${import.meta.env?.VITE_API_URL || 'http://localhost:5000/api'}/internships/discover`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        const data = await res.json();
+        if (data?.internships) {
+          setAllInternships(data.internships);
+          setInternships(data.internships);
+        }
+      } catch (e) {
+        console.error('Failed to load discover internships', e);
+      }
+    };
+    fetchDiscover();
   }, []);
 
   const handleFiltersChange = (newFilters) => {
@@ -208,7 +68,7 @@ const InternshipRecommendations = () => {
   };
 
   const applyFiltersAndSort = (currentFilters, currentSortBy, currentSortOrder) => {
-    let filteredInternships = [...mockInternships];
+  let filteredInternships = [...allInternships];
 
     // Apply filters
     if (currentFilters?.sectors?.length > 0) {
@@ -303,15 +163,34 @@ const InternshipRecommendations = () => {
       }
     });
 
-    setInternships(filteredInternships);
+  setInternships(filteredInternships);
   };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    applyFiltersAndSort(filters, sortBy, sortOrder);
-    setIsRefreshing(false);
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(`${import.meta.env?.VITE_API_URL || 'http://localhost:5000/api'}/internships/discover`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await res.json();
+      if (data?.internships) {
+        setAllInternships(data.internships);
+        // Re-apply current filters and sorting on fresh data
+        const prevAll = data.internships;
+        let filtered = [...prevAll];
+        // reuse logic via function
+        setInternships(filtered);
+        applyFiltersAndSort(filters, sortBy, sortOrder);
+      }
+    } catch (e) {
+      console.error('Failed to refresh internships', e);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const handleApply = async (internshipId) => {

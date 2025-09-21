@@ -11,7 +11,7 @@ import PreferencesSection from './components/PreferencesSection';
 import ResumeSection from './components/ResumeSection';
 import ProfileCompletionCard from './components/ProfileCompletionCard';
 import PrivacySettingsSection from './components/PrivacySettingsSection';
-import { userAPI } from '../../services/api';
+import { userAPI, skillsAPI } from '../../services/api';
 
 const UserProfileManagement = () => {
   const navigate = useNavigate();
@@ -34,13 +34,19 @@ const UserProfileManagement = () => {
         const res = await userAPI.getProfile();
         if (res?.user) {
           const u = res.user;
+          // Fetch separate skills doc
+          let separateSkills = { techSkills: [], softSkills: [] };
+          try {
+            const sk = await skillsAPI.get();
+            if (sk?.skills) separateSkills = { techSkills: sk.skills.techSkills || [], softSkills: sk.skills.softSkills || [] };
+          } catch {}
           // Map backend profile into UI shape, keeping extra fields optional
           setProfile({
             fullName: u?.name,
             email: u?.email,
             location: u?.profile?.location || '',
-            techSkills: Array.isArray(u?.profile?.skills) ? u.profile.skills : [],
-            softSkills: [],
+            techSkills: Array.isArray(separateSkills.techSkills) && separateSkills.techSkills.length > 0 ? separateSkills.techSkills : (Array.isArray(u?.profile?.skills) ? u.profile.skills : []),
+            softSkills: Array.isArray(separateSkills.softSkills) ? separateSkills.softSkills : [],
             education: {
               institution: u?.profile?.education || '',
               degree: '',
@@ -80,7 +86,8 @@ const UserProfileManagement = () => {
         update.location = data?.location || '';
       }
       if (section === 'skills') {
-        update.skills = Array.isArray(data?.techSkills) ? data.techSkills : [];
+        const tech = Array.isArray(data?.techSkills) ? data.techSkills : [];
+        update.skills = tech;
       }
       if (section === 'education') {
         update.education = data?.institution || '';
@@ -92,6 +99,10 @@ const UserProfileManagement = () => {
         }
       }
       const res = await userAPI.updateProfile(update);
+      // Also save separate skills document when skills section updates
+      if (section === 'skills') {
+        try { await skillsAPI.save({ techSkills: update.skills, softSkills: Array.isArray(data?.softSkills) ? data.softSkills : [] }); } catch {}
+      }
       if (res?.user) {
         // reflect backend response to local UI model
         setProfile(prev => ({

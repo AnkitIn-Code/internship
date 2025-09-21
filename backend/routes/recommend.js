@@ -1,132 +1,71 @@
 const express = require('express');
-const Internship = require('../models/Internship');
-const authMiddleware = require('../middleware/auth');
+const path = require('path');
+const { spawn } = require('child_process');
+const auth = require('../middleware/auth');
+const User = require('../models/User');
+const Skill = require('../models/Skill');
 
 const router = express.Router();
 
-// Calculate match score between candidate and internship
-function calculateMatchScore(candidateProfile, internship) {
-  let score = 0;
+function callPython(sector, location, tech) {
+        return new Promise((resolve, reject) => {
+        try {
+            const scriptPath = path.resolve(__dirname, 'app.py');
+                    const py = spawn('python', [scriptPath, sector || '', location || '', tech || ''], {
+                        cwd: __dirname,
+                    });
+            let stdout = '';
+            let stderr = '';
 
-  // Sector match (weight: 3)
-  if (internship.sector.toLowerCase() === candidateProfile.sector.toLowerCase()) {
-    score += 3;
-  }
-
-  // Location match (weight: 2)
-  if (internship.location.toLowerCase() === candidateProfile.location.toLowerCase()) {
-    score += 2;
-  }
-
-  // Skills match (weight: 1 per matching skill)
-  const candidateSkills = candidateProfile.skills.map(skill => skill.toLowerCase());
-  const internshipSkills = internship.skills.map(skill => skill.toLowerCase());
-  
-  const matchedSkills = candidateSkills.filter(skill => 
-    internshipSkills.some(internshipSkill => internshipSkill.includes(skill))
-  );
-  
-  score += matchedSkills.length;
-
-  return score;
+            py.stdout.on('data', (chunk) => {
+                stdout += chunk.toString();
+            });
+            py.stderr.on('data', (err) => {
+                stderr += err.toString();
+            });
+            py.on('close', (code) => {
+                if (code !== 0) {
+                    return reject(new Error(`Python exited with code ${code}: ${stderr}`));
+                }
+                try {
+                    const parsed = JSON.parse(stdout || '[]');
+                    resolve(parsed);
+                } catch (e) {
+                    reject(new Error(`Failed to parse Python output: ${e.message}. Raw: ${stdout}`));
+                }
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
 }
 
-// Get Recommendations for Authenticated User
-router.get('/', authMiddleware, async (req, res) => {
-  try {
-    const userProfile = req.user.profile;
+// POST /api/recommendations
+router.post('/', auth, async (req, res) => {
+    let { sector = '', location = '', tech = '' } = req.body || {};
+    try {
+        // If any inputs missing, hydrate from DB for current user
+        if (!sector || !location || !tech) {
+            const user = await User.findById(req.user._id).select('profile');
+            let skillsDoc = null;
+            try { skillsDoc = await Skill.findOne({ user: req.user._id }); } catch {}
 
-    // Check if user has profile data
-    if (!userProfile || !userProfile.skills || userProfile.skills.length === 0) {
-      return res.status(400).json({ 
-        message: 'Please complete your profile first to get recommendations',
-        recommendations: []
-      });
+            if (!sector) sector = user?.profile?.sector || '';
+            if (!location) location = user?.profile?.location || '';
+
+            if (!tech) {
+                const techArr = Array.isArray(skillsDoc?.techSkills) ? skillsDoc.techSkills
+                  : (Array.isArray(user?.profile?.skills) ? user.profile.skills : []);
+                tech = techArr.join(', ');
+            }
+        }
+
+        const recommendations = await callPython(sector, location, tech);
+        res.json({ message: 'Recommendations generated', recommendations });
+    } catch (err) {
+        console.error('Recommend error:', err);
+        res.status(500).json({ error: 'Failed to get recommendations', details: err.message });
     }
-
-    // Get all internships
-    const internships = await Internship.find();
-
-    if (internships.length === 0) {
-      return res.json({
-        message: 'No internships available currently',
-        recommendations: []
-      });
-    }
-
-    // Calculate scores and sort
-    const recommendations = internships
-      .map(internship => ({
-        ...internship.toObject(),
-        matchScore: calculateMatchScore(userProfile, internship)
-      }))
-      .sort((a, b) => b.matchScore - a.matchScore)
-      .slice(0, 5); // Top 5 recommendations
-
-    res.json({
-      message: 'Recommendations generated successfully',
-      recommendations,
-      userProfile: {
-        education: userProfile.education,
-        skills: userProfile.skills,
-        sector: userProfile.sector,
-        location: userProfile.location
-      }
-    });
-
-  } catch (error) {
-    console.error('Recommendations error:', error);
-    res.status(500).json({ message: 'Server error generating recommendations' });
-  }
-});
-
-// Get Recommendations with Custom Profile (for testing)
-router.post('/', async (req, res) => {
-  try {
-    const { education, skills, sector, location } = req.body;
-
-    if (!skills || !Array.isArray(skills) || skills.length === 0) {
-      return res.status(400).json({ 
-        message: 'Please provide skills array to get recommendations' 
-      });
-    }
-
-    const candidateProfile = {
-      education: education || '',
-      skills: skills || [],
-      sector: sector || '',
-      location: location || ''
-    };
-
-    // Get all internships
-    const internships = await Internship.find();
-
-    if (internships.length === 0) {
-      return res.json({
-        message: 'No internships available currently',
-        recommendations: []
-      });
-    }
-
-    // Calculate scores and sort
-    const recommendations = internships
-      .map(internship => ({
-        ...internship.toObject(),
-        matchScore: calculateMatchScore(candidateProfile, internship)
-      }))
-      .sort((a, b) => b.matchScore - a.matchScore)
-      .slice(0, 5); // Top 5 recommendations
-
-    res.json({
-      message: 'Recommendations generated successfully',
-      recommendations,
-      candidateProfile
-    });
-
-  } catch (error) {
-    console.error('Recommendations error:', error);
-    res.status(500).json({ message: 'Server error generating recommendations' });
-  }
 });
 
 module.exports = router;

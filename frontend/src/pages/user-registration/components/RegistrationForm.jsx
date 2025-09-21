@@ -159,12 +159,16 @@ const RegistrationForm = () => {
         throw new Error(data.message || 'Registration failed');
       }
 
-  // store JWT + user info
+      // store JWT + user info
       localStorage.setItem('authToken', data.token);
-  localStorage.setItem('userEmail', data.user.email);
-  localStorage.setItem('userName', data.user.name);
+      if (data.user) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userName', data.user.name);
+      }
 
-      navigate('/main-dashboard');
+      // Go directly to onboarding for brand new accounts
+      navigate('/candidate-onboarding', { replace: true });
     } catch (error) {
       setErrors({ submit: error.message });
     } finally {

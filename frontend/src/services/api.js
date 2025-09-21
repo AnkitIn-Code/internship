@@ -1,7 +1,6 @@
 // Use Vite env variables (import.meta.env) with VITE_ prefix
 const API_BASE_URL = (import.meta.env?.VITE_API_URL) || 'http://localhost:5000/api';
 
-// Get AI API key from environment or user settings
 const getAIApiKey = () => {
   return localStorage.getItem('aiApiKey') || import.meta.env?.VITE_AI_API_KEY;
 };
@@ -59,16 +58,73 @@ export const userAPI = {
   },
 };
 
-// Internship API calls with AI recommendations
-export const internshipAPI = {
-  getRecommendations: async () => {
+// Skills API
+export const skillsAPI = {
+  get: async () => {
     const token = localStorage.getItem('authToken');
-    // Backend provides GET /api/recommendations for authenticated user
-    const response = await fetch(`${API_BASE_URL}/recommendations`, {
+    const response = await fetch(`${API_BASE_URL}/skills`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+    });
+    return response.json();
+  },
+  save: async (skills) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/skills`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(skills),
+    });
+    return response.json();
+  },
+};
+
+// Current user API
+export const currentUserAPI = {
+  me: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/user/me`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+  markOnboarded: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/user/onboarded`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+};
+
+// Internship API calls with AI recommendations
+export const internshipAPI = {
+  getRecommendations: async (filters = {}) => {
+    const token = localStorage.getItem('authToken');
+    // Call POST /api/recommendations with sector, location, tech
+    const response = await fetch(`${API_BASE_URL}/recommendations`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        sector: filters.sector || '',
+        location: filters.location || '',
+        tech: filters.tech || '',
+      }),
     });
     return response.json();
   },

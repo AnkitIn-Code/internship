@@ -86,9 +86,9 @@ const LoginForm = () => {
         localStorage.setItem('userEmail', formData?.email);
       }
 
-      // Navigate to intended destination or dashboard
-      const from = location?.state?.from?.pathname || '/main-dashboard';
-      navigate(from, { replace: true });
+  // Navigate to intended destination or dashboard (no onboarding after login)
+  const target = location?.state?.from?.pathname || '/main-dashboard';
+  navigate(target, { replace: true });
 
     } catch (error) {
       setErrors({

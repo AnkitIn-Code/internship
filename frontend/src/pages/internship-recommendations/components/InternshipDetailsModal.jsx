@@ -14,11 +14,27 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
   };
 
   const getMatchColor = (percentage) => {
-    if (percentage >= 90) return 'text-success bg-success/10';
-    if (percentage >= 75) return 'text-primary bg-primary/10';
-    if (percentage >= 60) return 'text-warning bg-warning/10';
+    const p = Number(percentage ?? 0);
+    if (p >= 90) return 'text-success bg-success/10';
+    if (p >= 75) return 'text-primary bg-primary/10';
+    if (p >= 60) return 'text-warning bg-warning/10';
     return 'text-muted-foreground bg-muted';
   };
+
+  const safeToLocaleDate = (value) => {
+    if (!value) return 'Not specified';
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? 'Not specified' : d.toLocaleDateString();
+  };
+
+  const requiredSkills = Array.isArray(internship?.requiredSkills) ? internship.requiredSkills : [];
+  const qualifications = Array.isArray(internship?.qualifications) ? internship.qualifications : [];
+  const benefits = Array.isArray(internship?.benefits) ? internship.benefits : [];
+  const company = internship?.company || {};
+  const companyRating = Number(company?.rating ?? 0);
+  const companyReviews = Number(company?.reviewCount ?? 0);
+  const companySize = company?.size || '—';
+  const companyIndustry = company?.industry || '—';
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-subtle z-50 flex items-center justify-center p-4">
@@ -28,20 +44,20 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 rounded-lg overflow-hidden bg-muted">
               <Image
-                src={internship?.company?.logo}
-                alt={`${internship?.company?.name} logo`}
+                src={company?.logo}
+                alt={`${company?.name || 'Company'} logo`}
                 className="w-full h-full object-cover"
               />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-foreground">{internship?.title}</h2>
-              <p className="text-lg text-muted-foreground">{internship?.company?.name}</p>
+              <p className="text-lg text-muted-foreground">{company?.name || '—'}</p>
             </div>
           </div>
           
           <div className="flex items-center space-x-3">
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getMatchColor(internship?.matchPercentage)}`}>
-              {internship?.matchPercentage}% match
+              {Number(internship?.matchPercentage ?? 0)}% match
             </div>
             <Button
               variant="ghost"
@@ -69,7 +85,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
                 <Icon name="Clock" size={18} className="text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Duration</p>
-                  <p className="font-medium text-foreground">{internship?.duration}</p>
+                  <p className="font-medium text-foreground">{internship?.duration || '—'}</p>
                 </div>
               </div>
               
@@ -77,7 +93,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
                 <Icon name="DollarSign" size={18} className="text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Stipend</p>
-                  <p className="font-medium text-foreground">{formatStipend(internship?.stipend)}</p>
+                  <p className="font-medium text-foreground">{formatStipend(Number(internship?.stipend ?? 0))}</p>
                 </div>
               </div>
               
@@ -85,9 +101,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
                 <Icon name="Calendar" size={18} className="text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Deadline</p>
-                  <p className="font-medium text-foreground">
-                    {new Date(internship.applicationDeadline)?.toLocaleDateString()}
-                  </p>
+                  <p className="font-medium text-foreground">{safeToLocaleDate(internship?.applicationDeadline)}</p>
                 </div>
               </div>
             </div>
@@ -122,7 +136,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
                 <div>
                   <h4 className="text-sm font-medium text-foreground mb-2">Required Skills</h4>
                   <div className="flex flex-wrap gap-2">
-                    {internship?.requiredSkills?.map((skill, index) => (
+                    {requiredSkills?.map((skill, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-primary/10 text-primary text-sm rounded-full"
@@ -136,7 +150,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
                 <div>
                   <h4 className="text-sm font-medium text-foreground mb-2">Qualifications</h4>
                   <ul className="space-y-1 text-sm text-muted-foreground">
-                    {internship?.qualifications?.map((qualification, index) => (
+                    {qualifications?.map((qualification, index) => (
                       <li key={index} className="flex items-start space-x-2">
                         <Icon name="Check" size={16} className="text-success shrink-0 mt-0.5" />
                         <span>{qualification}</span>
@@ -149,7 +163,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
 
             {/* Company Info */}
             <div>
-              <h3 className="text-lg font-semibold text-foreground mb-3">About {internship?.company?.name}</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-3">About {company?.name || 'Company'}</h3>
               <div className="bg-muted/50 rounded-lg p-4 space-y-3">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-1">
@@ -158,40 +172,40 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
                         key={i}
                         name="Star"
                         size={16}
-                        className={i < Math.floor(internship?.company?.rating) 
+                        className={i < Math.floor(companyRating) 
                           ? 'text-warning fill-current' :'text-muted-foreground'
                         }
                       />
                     ))}
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    {internship?.company?.rating} ({internship?.company?.reviewCount} reviews)
+                    {companyRating} ({companyReviews} reviews)
                   </span>
                 </div>
                 
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  {internship?.company?.description}
+                  {company?.description || '—'}
                 </p>
                 
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <Icon name="Users" size={14} />
-                    <span>{internship?.company?.size} employees</span>
+                    <span>{companySize} employees</span>
                   </div>
                   <div className="flex items-center space-x-1">
                     <Icon name="Building" size={14} />
-                    <span>{internship?.company?.industry}</span>
+                    <span>{companyIndustry}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Benefits */}
-            {internship?.benefits && internship?.benefits?.length > 0 && (
+            {benefits?.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-foreground mb-3">Benefits & Perks</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {internship?.benefits?.map((benefit, index) => (
+                  {benefits?.map((benefit, index) => (
                     <div key={index} className="flex items-center space-x-2">
                       <Icon name="Check" size={16} className="text-success shrink-0" />
                       <span className="text-sm text-muted-foreground">{benefit}</span>
@@ -208,7 +222,7 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
           <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
-              onClick={() => onSave(internship?.id)}
+              onClick={() => onSave(internship?.id, true)}
               iconName="Heart"
               iconPosition="left"
             >

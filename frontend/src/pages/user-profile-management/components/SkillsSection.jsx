@@ -9,11 +9,13 @@ const SkillsSection = ({ profile, onUpdate, isEditing, onToggleEdit }) => {
   const [newTechSkill, setNewTechSkill] = useState('');
   const [newSoftSkill, setNewSoftSkill] = useState('');
 
-  const predefinedSoftSkills = [
-    'Communication', 'Leadership', 'Teamwork', 'Problem Solving', 'Time Management',
-    'Adaptability', 'Critical Thinking', 'Creativity', 'Work Ethic', 'Attention to Detail',
-    'Interpersonal Skills', 'Organizational Skills', 'Analytical Thinking', 'Initiative',
-    'Conflict Resolution', 'Presentation Skills', 'Customer Service', 'Negotiation'
+  // Suggested technical skills to quickly toggle like previous soft-skills grid
+  const predefinedTechSkills = [
+    'React', 'JavaScript', 'TypeScript', 'Node.js', 'Express', 'MongoDB', 'PostgreSQL',
+    'Python', 'Django', 'Flask', 'FastAPI', 'Java', 'Spring', 'C++', 'C#', 'Go', 'Rust',
+    'HTML', 'CSS', 'TailwindCSS', 'Sass', 'Redux', 'GraphQL', 'REST', 'Next.js', 'Vite',
+    'Docker', 'Kubernetes', 'AWS', 'Azure', 'GCP', 'Linux', 'Git', 'CI/CD', 'Jest', 'Cypress',
+    'ML', 'TensorFlow', 'PyTorch', 'Pandas', 'NumPy', 'SQL'
   ];
 
   const addTechSkill = () => {
@@ -29,12 +31,26 @@ const SkillsSection = ({ profile, onUpdate, isEditing, onToggleEdit }) => {
     setTechSkills(updatedSkills);
   };
 
-  const toggleSoftSkill = (skill) => {
-    if (softSkills?.includes(skill)) {
-      setSoftSkills(softSkills?.filter(s => s !== skill));
+  const toggleTechSkill = (skill) => {
+    const s = skill?.trim();
+    if (!s) return;
+    if (techSkills?.includes(s)) {
+      setTechSkills(techSkills?.filter(k => k !== s));
     } else {
-      setSoftSkills([...softSkills, skill]);
+      setTechSkills([...(techSkills || []), s]);
     }
+  };
+
+  const addSoftSkill = () => {
+    if (newSoftSkill?.trim() && !softSkills?.includes(newSoftSkill?.trim())) {
+      const updated = [...softSkills, newSoftSkill?.trim()];
+      setSoftSkills(updated);
+      setNewSoftSkill('');
+    }
+  };
+
+  const removeSoftSkill = (skillToRemove) => {
+    setSoftSkills(softSkills?.filter(s => s !== skillToRemove));
   };
 
   const handleSave = () => {
@@ -56,6 +72,12 @@ const SkillsSection = ({ profile, onUpdate, isEditing, onToggleEdit }) => {
   const handleKeyPress = (e) => {
     if (e?.key === 'Enter') {
       addTechSkill();
+    }
+  };
+
+  const handleSoftKeyPress = (e) => {
+    if (e?.key === 'Enter') {
+      addSoftSkill();
     }
   };
 
@@ -152,36 +174,84 @@ const SkillsSection = ({ profile, onUpdate, isEditing, onToggleEdit }) => {
               <p className="text-muted-foreground text-sm italic">No technical skills added yet</p>
             )}
           </div>
+
+          {isEditing && (
+            <div className="mt-4">
+              <h5 className="text-sm font-medium text-muted-foreground mb-2">Suggested</h5>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+                {predefinedTechSkills?.map((skill) => {
+                  const active = techSkills?.includes(skill);
+                  return (
+                    <button
+                      key={skill}
+                      type="button"
+                      onClick={() => toggleTechSkill(skill)}
+                      className={`text-left px-3 py-2 rounded-lg border text-sm transition-all duration-200 ${
+                        active
+                          ? 'bg-secondary/10 border-secondary text-secondary'
+                          : 'bg-muted/30 border-border text-muted-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="truncate">{skill}</span>
+                        {active && <Icon name="Check" size={14} className="text-secondary" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Soft Skills */}
         <div>
           <h4 className="text-md font-medium text-foreground mb-4">Soft Skills</h4>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-            {predefinedSoftSkills?.map((skill) => (
-              <button
-                key={skill}
-                onClick={() => isEditing && toggleSoftSkill(skill)}
-                disabled={!isEditing}
-                className={`text-left p-3 rounded-lg border transition-all duration-200 ${
-                  softSkills?.includes(skill)
-                    ? 'bg-secondary/10 border-secondary text-secondary' :'bg-muted/30 border-border text-muted-foreground hover:bg-muted/50'
-                } ${isEditing ? 'cursor-pointer' : 'cursor-default'}`}
+
+          {isEditing && (
+            <div className="flex items-center space-x-2 mb-4">
+              <Input
+                type="text"
+                value={newSoftSkill}
+                onChange={(e) => setNewSoftSkill(e?.target?.value)}
+                onKeyPress={handleSoftKeyPress}
+                placeholder="Add a soft skill (e.g., Communication, Leadership)"
+                className="flex-1"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={addSoftSkill}
+                iconName="Plus"
+                disabled={!newSoftSkill?.trim()}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{skill}</span>
-                  {softSkills?.includes(skill) && (
-                    <Icon name="Check" size={16} className="text-secondary" />
+                Add
+              </Button>
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2">
+            {softSkills?.length > 0 ? (
+              softSkills?.map((skill, index) => (
+                <div
+                  key={index}
+                  className="inline-flex items-center space-x-2 bg-secondary/10 text-secondary px-3 py-1.5 rounded-full text-sm"
+                >
+                  <span>{skill}</span>
+                  {isEditing && (
+                    <button
+                      onClick={() => removeSoftSkill(skill)}
+                      className="hover:bg-secondary/20 rounded-full p-0.5 transition-colors duration-200"
+                    >
+                      <Icon name="X" size={14} />
+                    </button>
                   )}
                 </div>
-              </button>
-            ))}
+              ))
+            ) : (
+              <p className="text-muted-foreground text-sm italic">No soft skills added yet</p>
+            )}
           </div>
-
-          {softSkills?.length === 0 && (
-            <p className="text-muted-foreground text-sm italic mt-4">No soft skills selected yet</p>
-          )}
         </div>
       </div>
       {isEditing && (

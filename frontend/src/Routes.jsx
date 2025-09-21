@@ -10,6 +10,7 @@ import InternshipRecommendations from './pages/internship-recommendations';
 import UserProfileManagement from './pages/user-profile-management';
 import UserRegistration from './pages/user-registration';
 import Settings from 'pages/Settings';
+import CandidateOnboarding from './pages/candidate-onboarding';
 
 const Routes = () => {
   return (
@@ -24,6 +25,7 @@ const Routes = () => {
         <Route path="/internship-recommendations" element={<InternshipRecommendations />} />
         <Route path="/user-profile-management" element={<UserProfileManagement />} />
         <Route path="/user-registration" element={<UserRegistration />} />
+  <Route path="/candidate-onboarding" element={<CandidateOnboarding />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>

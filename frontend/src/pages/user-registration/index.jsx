@@ -9,10 +9,7 @@ const UserRegistration = () => {
   useEffect(() => {
     // Check if user is already authenticated
     const token = localStorage.getItem('authToken');
-    if (token) {
-      // Redirect to dashboard if already logged in
-      window.location.href = '/main-dashboard';
-    }
+    
   }, []);
 
   return (

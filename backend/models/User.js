@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  hasOnboarded: {
+    type: Boolean,
+    default: true
+  },
   profile: {
     education: {
       type: String,

@@ -33,7 +33,8 @@ router.post('/signup', async (req, res) => {
     const user = new User({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      hasOnboarded: false,
     });
 
     await user.save();
@@ -51,7 +52,10 @@ router.post('/signup', async (req, res) => {
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        // New accounts should see onboarding
+        hasOnboarded: user.hasOnboarded === false ? false : true,
+        profile: user.profile
       }
     });
 
@@ -97,6 +101,8 @@ router.post('/login', async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        // Existing users without this field should NOT see onboarding
+        hasOnboarded: (typeof user.hasOnboarded === 'boolean') ? user.hasOnboarded : true,
         profile: user.profile
       }
     });
