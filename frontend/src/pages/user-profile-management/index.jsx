@@ -257,24 +257,6 @@ const UserProfileManagement = () => {
                 onToggleEdit={() => toggleSectionEdit('preferences')}
               />
             </div>
-
-            {/* Resume Section */}
-            <div id="section-resume">
-              <ResumeSection
-                profile={profile}
-                onUpdate={handleSectionUpdate}
-              />
-            </div>
-
-            {/* Privacy Settings Section */}
-            <div id="section-privacy">
-              <PrivacySettingsSection
-                profile={profile}
-                onUpdate={handleSectionUpdate}
-                isEditing={editingSections?.privacy}
-                onToggleEdit={() => toggleSectionEdit('privacy')}
-              />
-            </div>
           </div>
 
           {/* Sidebar */}

@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import Button from '../../../components/ui/Button';
 
-const InternshipCard = ({ internship, onApply, onSave, onViewDetails }) => {
+const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }) => {
   const [isSaved, setIsSaved] = useState(internship?.isSaved || false);
   const [isApplying, setIsApplying] = useState(false);
 
@@ -162,6 +162,23 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails }) => {
           iconPosition="left"
         >
           Details
+        </Button>
+        {/* New quick actions */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onAction?.(internship, 'under_review')}
+          iconName="Eye"
+        >
+          Review
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onAction?.(internship, 'rejected')}
+          iconName="XCircle"
+        >
+          Reject
         </Button>
       </div>
       {/* Company Rating */}

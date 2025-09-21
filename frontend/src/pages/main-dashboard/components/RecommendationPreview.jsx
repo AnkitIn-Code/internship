@@ -2,8 +2,29 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
+import { applicationsAPI } from '../../../services/api';
 
 const RecommendationPreview = ({ recommendations, onViewAll }) => {
+  const upsertFromRecommendation = async (rec, status) => {
+    if (!rec) return;
+    try {
+      await applicationsAPI.upsert({
+        title: rec.title,
+        company: rec.company?.name || rec.company,
+        location: rec.location,
+        duration: rec.duration,
+        stipend: rec.stipend,
+        applicationDeadline: rec.applicationDeadline,
+        description: rec.description,
+        status,
+        sourceType: 'recommendation',
+        sourceId: String(rec._id || rec.id || ''),
+      });
+      window.location.href = '/application-tracker';
+    } catch (e) {
+      console.error('Failed to upsert application', e);
+    }
+  };
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
@@ -67,7 +88,10 @@ const RecommendationPreview = ({ recommendations, onViewAll }) => {
               }`}>
                 {typeof internship?.matchScore === 'number' ? `${Math.min(100, Math.round(internship?.matchScore * 10))}% match` : `${internship?.matchPercentage}% match`}
               </div>
-              <Icon name="ChevronRight" size={16} className="text-muted-foreground" />
+              {/* Actions */}
+              <Button variant="outline" size="xs" onClick={() => upsertFromRecommendation(internship, 'applied')} iconName="ExternalLink">Apply</Button>
+              <Button variant="outline" size="xs" onClick={() => upsertFromRecommendation(internship, 'under_review')} iconName="Eye">Review</Button>
+              <Button variant="outline" size="xs" onClick={() => upsertFromRecommendation(internship, 'rejected')} iconName="XCircle">Reject</Button>
             </div>
           </div>
         ))}

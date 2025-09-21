@@ -3,7 +3,7 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import Button from '../../../components/ui/Button';
 
-const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }) => {
+const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave, onAction }) => {
   if (!isOpen || !internship) return null;
 
   const formatStipend = (amount) => {
@@ -253,6 +253,20 @@ const InternshipDetailsModal = ({ internship, isOpen, onClose, onApply, onSave }
               iconPosition="right"
             >
               Apply Now
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => onAction?.(internship, 'under_review')}
+              iconName="Eye"
+            >
+              Review
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => onAction?.(internship, 'rejected')}
+              iconName="XCircle"
+            >
+              Reject
             </Button>
           </div>
         </div>

@@ -9,6 +9,7 @@ import CalendarView from './components/CalendarView';
 import AnalyticsView from './components/AnalyticsView';
 import SearchAndFilters from './components/SearchAndFilters';
 import ApplicationDetailsModal from './components/ApplicationDetailsModal';
+import { applicationsAPI } from '../../services/api';
 
 const ApplicationTracker = () => {
   const [activeView, setActiveView] = useState('kanban');
@@ -22,160 +23,7 @@ const ApplicationTracker = () => {
     sortBy: 'date_desc',
     dateRange: 'all'
   });
-
-  // Mock applications data
-  const [applications, setApplications] = useState([
-    {
-      id: 1,
-      company: "Google",
-      position: "Software Engineering Intern",
-      status: "interview_scheduled",
-      priority: "high",
-      appliedDate: "2024-01-15",
-      deadline: "2024-02-15",
-      interviewDate: "2024-01-25",
-      followUpDate: "2024-01-30",
-      location: "Mountain View, CA",
-      salaryRange: "$6,000 - $8,000/month",
-      description: `Join Google's engineering team as a Software Engineering Intern.\n\nResponsibilities:\n• Develop and maintain web applications\n• Collaborate with cross-functional teams\n• Participate in code reviews and technical discussions\n\nRequirements:\n• Currently pursuing Computer Science degree\n• Strong programming skills in Python, Java, or C++\n• Experience with web technologies`,
-      notes: [
-        {
-          author: "You",
-          date: "2024-01-16",
-          content: "Applied through university career portal. Received confirmation email."
-        },
-        {
-          author: "You", 
-          date: "2024-01-20",
-          content: "HR reached out for phone screening. Scheduled for next week."
-        }
-      ],
-      documents: [
-        { name: "Resume_Google.pdf", size: "245 KB" },
-        { name: "Cover_Letter.pdf", size: "128 KB" }
-      ]
-    },
-    {
-      id: 2,
-      company: "Microsoft",
-      position: "Product Management Intern",
-      status: "under_review",
-      priority: "high",
-      appliedDate: "2024-01-12",
-      deadline: "2024-02-10",
-      location: "Redmond, WA",
-      salaryRange: "$5,500 - $7,500/month",
-      description: `Microsoft is seeking a Product Management Intern to join our Office 365 team.\n\nYou will work on:\n• Product strategy and roadmap planning\n• User research and data analysis\n• Cross-team collaboration\n• Feature specification and requirements gathering`,
-      notes: [
-        {
-          author: "You",
-          date: "2024-01-13",
-          content: "Submitted application with portfolio. Waiting for response."
-        }
-      ],
-      documents: [
-        { name: "Resume_Microsoft.pdf", size: "251 KB" },
-        { name: "Portfolio.pdf", size: "2.1 MB" }
-      ]
-    },
-    {
-      id: 3,
-      company: "Apple",
-      position: "iOS Development Intern",
-      status: "applied",
-      priority: "medium",
-      appliedDate: "2024-01-18",
-      deadline: "2024-03-01",
-      location: "Cupertino, CA",
-      salaryRange: "$6,500 - $8,500/month",
-      description: `Join Apple's iOS development team and work on cutting-edge mobile applications.\n\nWhat you'll do:\n• Develop iOS applications using Swift\n• Work with design teams on UI/UX\n• Optimize app performance\n• Participate in app store submission process`,
-      notes: [],
-      documents: [
-        { name: "Resume_Apple.pdf", size: "248 KB" }
-      ]
-    },
-    {
-      id: 4,
-      company: "Meta",
-      position: "Data Science Intern",
-      status: "offer_received",
-      priority: "high",
-      appliedDate: "2024-01-05",
-      deadline: "2024-01-20",
-      interviewDate: "2024-01-15",
-      location: "Menlo Park, CA",
-      salaryRange: "$7,000 - $9,000/month",
-      description: `Work with Meta's data science team to analyze user behavior and product metrics.\n\nResponsibilities:\n• Analyze large datasets using Python and SQL\n• Build predictive models\n• Create data visualizations\n• Present findings to stakeholders`,
-      notes: [
-        {
-          author: "You",
-          date: "2024-01-06",
-          content: "Quick response from recruiter. Phone screen scheduled."
-        },
-        {
-          author: "You",
-          date: "2024-01-16",
-          content: "Great interview! Received offer letter today."
-        }
-      ],
-      documents: [
-        { name: "Resume_Meta.pdf", size: "252 KB" },
-        { name: "Data_Science_Portfolio.pdf", size: "3.2 MB" },
-        { name: "Offer_Letter.pdf", size: "156 KB" }
-      ]
-    },
-    {
-      id: 5,
-      company: "Amazon",
-      position: "Software Development Intern",
-      status: "rejected",
-      priority: "medium",
-      appliedDate: "2024-01-08",
-      deadline: "2024-01-25",
-      location: "Seattle, WA",
-      salaryRange: "$5,800 - $7,200/month",
-      description: `Amazon Web Services is looking for a Software Development Intern.\n\nYou will:\n• Develop cloud-based solutions\n• Work with distributed systems\n• Participate in on-call rotations\n• Contribute to open-source projects`,
-      notes: [
-        {
-          author: "You",
-          date: "2024-01-09",
-          content: "Applied through Amazon\'s career portal."
-        },
-        {
-          author: "You",
-          date: "2024-01-22",
-          content: "Received rejection email. Will apply again next cycle."
-        }
-      ],
-      documents: [
-        { name: "Resume_Amazon.pdf", size: "247 KB" }
-      ]
-    },
-    {
-      id: 6,
-      company: "Netflix",
-      position: "UI/UX Design Intern",
-      status: "interview_scheduled",
-      priority: "medium",
-      appliedDate: "2024-01-20",
-      deadline: "2024-02-28",
-      interviewDate: "2024-01-28",
-      location: "Los Gatos, CA",
-      salaryRange: "$5,000 - $6,500/month",
-      description: `Join Netflix's design team to create engaging user experiences.\n\nWhat you'll work on:\n• User interface design for streaming platform\n• User research and testing\n• Design system maintenance\n• Prototyping and wireframing`,
-      notes: [
-        {
-          author: "You",
-          date: "2024-01-21",
-          content: "Portfolio review went well. Design challenge scheduled."
-        }
-      ],
-      documents: [
-        { name: "Resume_Netflix.pdf", size: "243 KB" },
-        { name: "Design_Portfolio.pdf", size: "4.5 MB" }
-      ]
-    }
-  ]);
+  const [applications, setApplications] = useState([]);
 
   // Filter and search applications
   const filteredApplications = useMemo(() => {
@@ -235,13 +83,10 @@ const ApplicationTracker = () => {
   ];
 
   const handleStatusUpdate = (applicationId, newStatus) => {
-    setApplications(prev =>
-      prev?.map(app =>
-        app?.id === applicationId
-          ? { ...app, status: newStatus }
-          : app
-      )
-    );
+    setApplications(prev => prev?.map(app => app?.id === applicationId ? { ...app, status: newStatus } : app));
+    applicationsAPI.update(applicationId, { status: newStatus }).catch(() => {
+      // noop: optimistic update; could add rollback if desired
+    });
   };
 
   const handleViewDetails = (application) => {
@@ -250,13 +95,10 @@ const ApplicationTracker = () => {
   };
 
   const handleUpdateApplication = (updatedApplication) => {
-    setApplications(prev =>
-      prev?.map(app =>
-        app?.id === updatedApplication?.id
-          ? updatedApplication
-          : app
-      )
-    );
+    setApplications(prev => prev?.map(app => app?.id === updatedApplication?.id ? updatedApplication : app));
+    applicationsAPI.update(updatedApplication?.id, updatedApplication).catch(() => {
+      // noop
+    });
   };
 
   const handleDeleteApplication = (applicationId) => {
@@ -282,6 +124,26 @@ const ApplicationTracker = () => {
   // Set page title
   useEffect(() => {
     document.title = 'Application Tracker - InternshipHub';
+  }, []);
+
+  // Load applications
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await applicationsAPI.list();
+        const apps = (res?.applications || []).map(a => ({
+          // normalize fields for UI
+          ...a,
+          id: a._id,
+          position: a.title,
+          salaryRange: a.stipend ? `₹${a.stipend}` : undefined,
+        }));
+        setApplications(apps);
+      } catch (e) {
+        console.error('Failed to load applications', e);
+      }
+    };
+    load();
   }, []);
 
   return (

@@ -10,6 +10,7 @@ import BulkActions from './components/BulkActions';
 import ComparisonModal from './components/ComparisonModal';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
+import { applicationsAPI } from '../../services/api';
 
 const InternshipRecommendations = () => {
   const navigate = useNavigate();
@@ -194,9 +195,25 @@ const InternshipRecommendations = () => {
   };
 
   const handleApply = async (internshipId) => {
-    // Simulate application process
-    console.log('Applying to internship:', internshipId);
-    // Navigate to application tracker or external application
+    const item = internships.find(i => i.id === internshipId);
+    if (item) {
+      try {
+        await applicationsAPI.upsert({
+          title: item.title,
+          company: item.company?.name || item.company,
+          location: item.location,
+          duration: item.duration,
+          stipend: item.stipend,
+          applicationDeadline: item.applicationDeadline,
+          description: item.description,
+          status: 'applied',
+          sourceType: 'csv',
+          sourceId: String(item.id),
+        });
+      } catch (e) {
+        console.error('Failed to save application', e);
+      }
+    }
     navigate('/application-tracker');
   };
 
@@ -211,6 +228,27 @@ const InternshipRecommendations = () => {
   const handleViewDetails = (internship) => {
     setSelectedInternship(internship);
     setIsDetailsModalOpen(true);
+  };
+
+  const handleAction = async (internship, status) => {
+    if (!internship) return;
+    try {
+      await applicationsAPI.upsert({
+        title: internship.title,
+        company: internship.company?.name || internship.company,
+        location: internship.location,
+        duration: internship.duration,
+        stipend: internship.stipend,
+        applicationDeadline: internship.applicationDeadline,
+        description: internship.description,
+        status,
+        sourceType: 'csv',
+        sourceId: String(internship.id),
+      });
+      navigate('/application-tracker');
+    } catch (e) {
+      console.error('Failed to upsert application', e);
+    }
   };
 
   const handleInternshipSelect = (internshipId) => {
@@ -345,6 +383,7 @@ const InternshipRecommendations = () => {
                         onApply={handleApply}
                         onSave={handleSave}
                         onViewDetails={handleViewDetails}
+                        onAction={handleAction}
                       />
                     </div>
                   </div>
@@ -388,6 +427,7 @@ const InternshipRecommendations = () => {
         }}
         onApply={handleApply}
         onSave={handleSave}
+        onAction={handleAction}
       />
       <ComparisonModal
         internships={Array.isArray(selectedInternship) ? selectedInternship : []}

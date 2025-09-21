@@ -143,6 +143,44 @@ export const internshipAPI = {
   // No apply endpoint in backend currently
 };
 
+// Applications API (tracker)
+export const applicationsAPI = {
+  list: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/applications`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+  upsert: async (payload) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/applications/upsert`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    return response.json();
+  },
+  update: async (id, updates) => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/applications/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    });
+    return response.json();
+  },
+};
+
 // Settings API for AI configuration
 export const settingsAPI = {
   saveAIApiKey: async (apiKey) => {
