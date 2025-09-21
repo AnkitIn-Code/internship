@@ -2,14 +2,16 @@ import React from 'react';
 
 import Select from '../../../components/ui/Select';
 import Button from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const SortControls = ({ sortBy, sortOrder, onSortChange, onRefresh, isRefreshing }) => {
+  const { t } = useTranslation();
   const sortOptions = [
-    { value: 'match', label: 'Match Percentage' },
-    { value: 'deadline', label: 'Application Deadline' },
-    { value: 'stipend', label: 'Stipend Amount' },
-    { value: 'rating', label: 'Company Rating' },
-    { value: 'posted', label: 'Recently Posted' }
+    { value: 'match', label: t('sort.match') },
+    { value: 'deadline', label: t('sort.deadline') },
+    { value: 'stipend', label: t('sort.stipend') },
+    { value: 'rating', label: t('sort.rating') },
+    { value: 'posted', label: t('sort.posted') }
   ];
 
   const handleSortByChange = (value) => {
@@ -27,11 +29,11 @@ const SortControls = ({ sortBy, sortOrder, onSortChange, onRefresh, isRefreshing
 
   const getSortOrderLabel = () => {
     const labels = {
-      match: sortOrder === 'desc' ? 'Highest First' : 'Lowest First',
-      deadline: sortOrder === 'asc' ? 'Earliest First' : 'Latest First',
-      stipend: sortOrder === 'desc' ? 'Highest First' : 'Lowest First',
-      rating: sortOrder === 'desc' ? 'Highest First' : 'Lowest First',
-      posted: sortOrder === 'desc' ? 'Newest First' : 'Oldest First'
+      match: sortOrder === 'desc' ? t('sort.highestFirst') : t('sort.lowestFirst'),
+      deadline: sortOrder === 'asc' ? t('sort.earliestFirst') : t('sort.latestFirst'),
+      stipend: sortOrder === 'desc' ? t('sort.highestFirst') : t('sort.lowestFirst'),
+      rating: sortOrder === 'desc' ? t('sort.highestFirst') : t('sort.lowestFirst'),
+      posted: sortOrder === 'desc' ? t('sort.newestFirst') : t('sort.oldestFirst')
     };
     return labels?.[sortBy] || '';
   };
@@ -41,7 +43,7 @@ const SortControls = ({ sortBy, sortOrder, onSortChange, onRefresh, isRefreshing
       <div className="flex items-center space-x-4 w-full sm:w-auto">
         <div className="flex-1 sm:flex-none min-w-0 sm:min-w-48">
           <Select
-            placeholder="Sort by"
+            placeholder={t('sort.placeholder')}
             options={sortOptions}
             value={sortBy}
             onChange={handleSortByChange}
@@ -58,7 +60,7 @@ const SortControls = ({ sortBy, sortOrder, onSortChange, onRefresh, isRefreshing
         >
           <span className="hidden sm:inline">{getSortOrderLabel()}</span>
           <span className="sm:hidden">
-            {sortOrder === 'asc' ? 'Low-High' : 'High-Low'}
+            {sortOrder === 'asc' ? t('sort.lowHigh') : t('sort.highLow')}
           </span>
         </Button>
       </div>
@@ -74,15 +76,15 @@ const SortControls = ({ sortBy, sortOrder, onSortChange, onRefresh, isRefreshing
           className={isRefreshing ? 'animate-spin' : ''}
         >
           <span className="hidden sm:inline">
-            {isRefreshing ? 'Refreshing...' : 'Refresh Results'}
+            {isRefreshing ? t('sort.refreshing') : t('sort.refreshResults')}
           </span>
           <span className="sm:hidden">
-            {isRefreshing ? 'Refreshing' : 'Refresh'}
+            {isRefreshing ? t('sort.refreshing') : t('sort.refresh')}
           </span>
         </Button>
 
         <div className="text-sm text-muted-foreground whitespace-nowrap">
-          Updated 2 min ago
+          {t('sort.updatedAgo', { minutes: 2 })}
         </div>
       </div>
     </div>

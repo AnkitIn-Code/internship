@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./styles/tailwind.css";
 import "./styles/index.css";
+import "./i18n";
 
 const container = document.getElementById("root");
 const root = createRoot(container);

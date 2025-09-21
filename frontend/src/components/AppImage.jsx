@@ -13,7 +13,7 @@ function Image({
       alt={alt}
       className={className}
       onError={(e) => {
-        e.target.src = "/assets/images/no_image.png"
+        e.target.src = "C:\Users\Ankit Ydv\Desktop\WhatsApp Image 2025-09-21 at 11.42.56_e93eb14c.jpg"
       }}
       {...props}
     />

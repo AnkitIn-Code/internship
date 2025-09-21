@@ -157,23 +157,6 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// Get Internship by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const internship = await Internship.findById(req.params.id);
-    
-    if (!internship) {
-      return res.status(404).json({ message: 'Internship not found' });
-    }
-
-    res.json({ internship });
-
-  } catch (error) {
-    console.error('Get internship error:', error);
-    res.status(500).json({ message: 'Server error fetching internship' });
-  }
-});
-
 // Seed some sample internships (for testing)
 router.post('/seed', async (req, res) => {
   try {

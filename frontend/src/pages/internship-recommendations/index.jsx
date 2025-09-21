@@ -11,9 +11,11 @@ import ComparisonModal from './components/ComparisonModal';
 import Icon from '../../components/AppIcon';
 import Button from '../../components/ui/Button';
 import { applicationsAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const InternshipRecommendations = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [filters, setFilters] = useState({
     sectors: [],
     locations: [],
@@ -293,19 +295,19 @@ const InternshipRecommendations = () => {
               onClick={() => navigate('/main-dashboard')}
               className="hover:text-foreground transition-colors duration-200"
             >
-              Dashboard
+              {t('nav.dashboard')}
             </button>
             <Icon name="ChevronRight" size={16} />
-            <span>Internship Recommendations</span>
+            <span>{t('recommend.title')}</span>
           </div>
           
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">
-                Recommended for You
+                {t('recommend.heading')}
               </h1>
               <p className="text-muted-foreground">
-                AI-powered internship matches based on your profile and preferences
+                {t('recommend.subtitle')}
               </p>
             </div>
             
@@ -318,7 +320,7 @@ const InternshipRecommendations = () => {
                 iconName="Settings"
                 iconPosition="left"
               >
-                Update Preferences
+                {t('recommend.updatePreferences')}
               </Button>
             </div>
           </div>
@@ -349,15 +351,15 @@ const InternshipRecommendations = () => {
             {/* Results Summary */}
             <div className="flex items-center justify-between mb-6">
               <div className="text-sm text-muted-foreground">
-                Showing {internships?.length} internship{internships?.length !== 1 ? 's' : ''} 
+                {t('recommend.showingCount', { count: internships?.length || 0 })}
                 {Object.values(filters)?.some(value => 
                   Array.isArray(value) ? value?.length > 0 : value
-                ) && ' (filtered)'}
+                ) && ` (${t('recommend.filtered')})`}
               </div>
               
               {selectedInternships?.length > 0 && (
                 <div className="text-sm text-primary">
-                  {selectedInternships?.length} selected for comparison
+                  {t('recommend.selectedForComparison', { count: selectedInternships?.length })}
                 </div>
               )}
             </div>
@@ -393,10 +395,10 @@ const InternshipRecommendations = () => {
               <div className="text-center py-12">
                 <Icon name="Search" size={48} className="mx-auto text-muted-foreground mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
-                  No internships found
+                  {t('recommend.noResultsTitle')}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  Try adjusting your filters or search criteria
+                  {t('recommend.noResultsDesc')}
                 </p>
                 <Button
                   variant="outline"
@@ -410,7 +412,7 @@ const InternshipRecommendations = () => {
                     immediateStart: false
                   })}
                 >
-                  Clear All Filters
+                  {t('recommend.clearFilters')}
                 </Button>
               </div>
             )}

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const UpcomingDeadlines = ({ deadlines, onViewCalendar }) => {
   const [currentDate] = useState(new Date());
+  const { i18n, t } = useTranslation();
+  const locale = (i18n.resolvedLanguage || i18n.language || 'en').startsWith('hi') ? 'hi-IN' : 'en-US';
   
   const formatDate = (date) => {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(locale, {
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -35,10 +38,10 @@ const UpcomingDeadlines = ({ deadlines, onViewCalendar }) => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-1">
-            Upcoming Deadlines
+            {t('dashboard.deadlines.title')}
           </h2>
           <p className="text-muted-foreground text-sm">
-            Stay on top of your application timeline
+            {t('dashboard.deadlines.subtitle')}
           </p>
         </div>
         <Button
@@ -48,7 +51,7 @@ const UpcomingDeadlines = ({ deadlines, onViewCalendar }) => {
           iconName="Calendar"
           iconPosition="left"
         >
-          View Calendar
+          {t('dashboard.deadlines.viewCalendar')}
         </Button>
       </div>
       <div className="space-y-3">
@@ -79,10 +82,10 @@ const UpcomingDeadlines = ({ deadlines, onViewCalendar }) => {
               </div>
               <div className="text-right">
                 <div className={`px-2 py-1 rounded-full text-xs font-medium ${urgencyColor}`}>
-                  {daysUntil === 0 ? 'Today' : 
-                   daysUntil === 1 ? 'Tomorrow' : 
-                   daysUntil < 0 ? 'Overdue' :
-                   `${daysUntil} days`}
+                  {daysUntil === 0 ? t('dashboard.deadlines.today') : 
+                   daysUntil === 1 ? t('dashboard.deadlines.tomorrow') : 
+                   daysUntil < 0 ? t('dashboard.deadlines.overdue') :
+                   t('dashboard.deadlines.days', { count: daysUntil })}
                 </div>
               </div>
             </div>
@@ -93,10 +96,10 @@ const UpcomingDeadlines = ({ deadlines, onViewCalendar }) => {
         <div className="text-center py-8">
           <Icon name="Calendar" size={48} className="mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">
-            No upcoming deadlines
+            {t('dashboard.deadlines.emptyTitle')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Your deadlines will appear here once you start applying
+            {t('dashboard.deadlines.emptyDesc')}
           </p>
         </div>
       )}

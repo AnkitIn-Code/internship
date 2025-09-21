@@ -1,5 +1,6 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
+import { useTranslation } from 'react-i18next';
 
 const ActivityFeed = ({ activities }) => {
   const getActivityIcon = (type) => {
@@ -36,14 +37,15 @@ const ActivityFeed = ({ activities }) => {
     return activityDate?.toLocaleDateString();
   };
 
+  const { t } = useTranslation();
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="mb-6">
         <h2 className="text-xl font-semibold text-foreground mb-1">
-          Recent Activity
+          {t('dashboard.activity.title')}
         </h2>
         <p className="text-muted-foreground text-sm">
-          Your latest internship journey updates
+          {t('dashboard.activity.subtitle')}
         </p>
       </div>
       <div className="space-y-4">
@@ -67,10 +69,10 @@ const ActivityFeed = ({ activities }) => {
         <div className="text-center py-8">
           <Icon name="Activity" size={48} className="mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">
-            No recent activity
+            {t('dashboard.activity.emptyTitle')}
           </h3>
           <p className="text-muted-foreground text-sm">
-            Your activity will appear here as you use the platform
+            {t('dashboard.activity.emptyDesc')}
           </p>
         </div>
       )}

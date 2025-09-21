@@ -5,11 +5,13 @@ import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
 import RecommendationFormModal from './RecommendationFormModal';
 import { applicationsAPI } from '../../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecommendations }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Helper to choose badge color based on match %
   const badgeClass = (pct) => {
@@ -55,10 +57,10 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-foreground mb-1">
-            Recommended for You
+            {t('dashboard.recommendations.title')}
           </h2>
           <p className="text-muted-foreground text-sm">
-            AI-powered internship matches based on your profile
+            {t('dashboard.recommendations.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -69,7 +71,7 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
             iconName="Sparkles"
             iconPosition="left"
           >
-            Get Recommendation
+            {t('dashboard.recommendations.get')}
           </Button>
           <Button
             variant="outline"
@@ -78,7 +80,7 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
             iconName="ArrowRight"
             iconPosition="right"
           >
-            View All
+            {t('dashboard.recommendations.viewAll')}
           </Button>
         </div>
       </div>
@@ -134,7 +136,7 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
                 onClick={() => handleAction(internship, 'applied')}
                 iconName="Send"
               >
-                Apply
+                {t('dashboard.recommendations.apply')}
               </Button>
               <Button
                 variant="outline"
@@ -142,7 +144,7 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
                 onClick={() => handleAction(internship, 'under_review')}
                 iconName="Eye"
               >
-                Review
+                {t('dashboard.recommendations.review')}
               </Button>
               <Button
                 variant="outline"
@@ -150,7 +152,7 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
                 onClick={() => handleAction(internship, 'rejected')}
                 iconName="XCircle"
               >
-                Reject
+                {t('dashboard.recommendations.reject')}
               </Button>
               {typeof internship.matchPercentage === 'number' && (
                 <div
@@ -158,7 +160,7 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
                     internship.matchPercentage
                   )}`}
                 >
-                  {internship.matchPercentage}% match
+                  {internship.matchPercentage}% {t('dashboard.recommendations.match')}
                 </div>
               )}
             </div>
@@ -170,13 +172,13 @@ const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecom
         <div className="text-center py-8">
           <Icon name="Search" size={48} className="mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">
-            No recommendations yet
+            {t('dashboard.recommendations.emptyTitle')}
           </h3>
           <p className="text-muted-foreground text-sm mb-4">
-            Complete your profile to get personalized internship recommendations
+            {t('dashboard.recommendations.emptyDesc')}
           </p>
           <Button variant="outline" size="sm" iconName="User" iconPosition="left">
-            Complete Profile
+            {t('dashboard.completeProfile')}
           </Button>
         </div>
       )}

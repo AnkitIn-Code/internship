@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import Button from '../../../components/ui/Button';
+import { useTranslation } from 'react-i18next';
 
 const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }) => {
   const [isSaved, setIsSaved] = useState(internship?.isSaved || false);
   const [isApplying, setIsApplying] = useState(false);
+  const { t } = useTranslation();
 
   const handleSave = async () => {
     setIsSaved(!isSaved);
@@ -49,8 +51,8 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
         <div className="flex items-center space-x-3">
           <div className="w-12 h-12 rounded-lg overflow-hidden bg-muted shrink-0">
             <Image
-              src={internship?.company?.logo}
-              alt={`${internship?.company?.name} logo`}
+              src={internship?.company?.logo || internship?.companyLogo || '/assets/images/download.png'}
+              alt={`${(internship?.company?.name || internship?.company || '')} logo`}
               className="w-full h-full object-cover"
             />
           </div>
@@ -59,7 +61,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
               {internship?.title}
             </h3>
             <p className="text-sm text-muted-foreground">
-              {internship?.company?.name}
+              {internship?.company?.name || internship?.company}
             </p>
           </div>
         </div>
@@ -95,13 +97,13 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center space-x-1 text-muted-foreground">
             <Icon name="Calendar" size={14} />
-            <span>Apply by {new Date(internship.applicationDeadline)?.toLocaleDateString()}</span>
+            <span>{t('card.applyBy', { date: new Date(internship.applicationDeadline)?.toLocaleDateString() })}</span>
           </div>
           {daysLeft <= 7 && (
             <div className="flex items-center space-x-1 text-warning">
               <Icon name="AlertTriangle" size={14} />
               <span className="font-medium">
-                {daysLeft <= 0 ? 'Deadline passed' : `${daysLeft} days left`}
+                {daysLeft <= 0 ? t('card.deadlinePassed') : t('card.daysLeft', { count: daysLeft })}
               </span>
             </div>
           )}
@@ -119,7 +121,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
           ))}
           {internship?.requiredSkills?.length > 4 && (
             <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-md">
-              +{internship?.requiredSkills?.length - 4} more
+              {t('card.moreSkills', { count: internship?.requiredSkills?.length - 4 })}
             </span>
           )}
         </div>
@@ -129,7 +131,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
           <div className="flex items-start space-x-2">
             <Icon name="Sparkles" size={16} className="text-primary shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-primary mb-1">AI Match Reasoning</p>
+              <p className="text-sm font-medium text-primary mb-1">{t('card.aiReasoning')}</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
                 {internship?.aiReasoning}
               </p>
@@ -149,7 +151,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
           iconPosition="right"
           className="flex-1"
         >
-          {daysLeft <= 0 ? 'Deadline Passed' : 'Apply Now'}
+          {daysLeft <= 0 ? t('card.deadlinePassedBtn') : t('card.applyNow')}
         </Button>
         
         <Button
@@ -159,7 +161,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
           iconName="Eye"
           iconPosition="left"
         >
-          Details
+          {t('card.details')}
         </Button>
         {/* New quick actions */}
         <Button
@@ -168,7 +170,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
           onClick={() => onAction?.(internship, 'under_review')}
           iconName="Eye"
         >
-          Review
+          {t('dashboard.recommendations.review')}
         </Button>
         <Button
           variant="outline"
@@ -176,7 +178,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
           onClick={() => onAction?.(internship, 'rejected')}
           iconName="XCircle"
         >
-          Reject
+          {t('dashboard.recommendations.reject')}
         </Button>
       </div>
       {/* Company Rating */}
@@ -195,12 +197,12 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
             ))}
           </div>
           <span className="text-sm text-muted-foreground">
-            {internship?.company?.rating} ({internship?.company?.reviewCount} reviews)
+            {internship?.company?.rating} ({internship?.company?.reviewCount} {t('card.reviews')})
           </span>
         </div>
 
         <div className="text-xs text-muted-foreground">
-          Posted {internship?.postedDaysAgo} days ago
+          {t('card.postedAgo', { days: internship?.postedDaysAgo })}
         </div>
       </div>
     </div>

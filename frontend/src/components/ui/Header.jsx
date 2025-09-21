@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import Button from './Button';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Check if we're on the landing page
   const isLandingPage = location?.pathname === '/';
 
   const navigationItems = [
-    { label: 'Dashboard', path: '/main-dashboard', icon: 'LayoutDashboard' },
-    { label: 'Discover', path: '/internship-recommendations', icon: 'Search' },
-    { label: 'Track Applications', path: '/application-tracker', icon: 'ClipboardList' },
-    { label: 'Profile', path: '/user-profile-management', icon: 'User' }
+    { label: t('nav.dashboard'), path: '/main-dashboard', icon: 'LayoutDashboard' },
+    { label: t('nav.discover'), path: '/internship-recommendations', icon: 'Search' },
+    { label: t('nav.track'), path: '/application-tracker', icon: 'ClipboardList' },
+    { label: t('nav.profile'), path: '/user-profile-management', icon: 'User' }
   ];
 
   const isActivePath = (path) => location?.pathname === path;
@@ -70,7 +73,7 @@ const Header = () => {
                 <Icon name="Briefcase" size={20} color="white" />
               </div>
               <span className="text-xl font-semibold text-foreground">
-                InternGuide AI
+                {t('appTitle')}
               </span>
             </button>
           </div>
@@ -94,12 +97,16 @@ const Header = () => {
 
           {/* User Actions */}
           <div className="relative">
+             <div className="hidden md:block mr-3">
+               <LanguageSwitcher />
+             </div>
              <Button
                 variant="outline"
                 size="sm"
                 iconName="Settings"
                 iconPosition="left"
                 onClick={toggleDropdown}
+                aria-label={t('nav.settings')}
               />
             {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-md shadow-lg z-50">
@@ -109,7 +116,7 @@ const Header = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <Icon name="User" size={16} />
-                      <span>Profile</span>
+                      <span>{t('nav.profile')}</span>
                     </div>
                   </button>
                   <button
@@ -118,7 +125,7 @@ const Header = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <Icon name="LogOut" size={16} />
-                      <span>Logout</span>
+                      <span>{t('nav.logout')}</span>
                     </div>
                   </button>
                 </div>
@@ -132,6 +139,7 @@ const Header = () => {
               size="sm"
               onClick={toggleMobileMenu}
               iconName={isMobileMenuOpen ? 'X' : 'Menu'}
+              aria-label="Toggle Menu"
             />
           </div>
         </div>
@@ -140,6 +148,9 @@ const Header = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card animate-slide-in">
             <div className="px-6 py-4 space-y-2">
+              <div className="flex justify-end pb-2">
+                <LanguageSwitcher />
+              </div>
               {navigationItems?.map((item) => (
                 <button
                   key={item?.path}
@@ -161,14 +172,14 @@ const Header = () => {
                   className="flex items-center space-x-3 w-full px-3 py-3 rounded-md text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors duration-200"
                 >
                   <Icon name="User" size={18} />
-                  <span>Profile</span>
+                  <span>{t('nav.profile')}</span>
                 </button>
                 <button
                   onClick={handleLogout}
                   className="flex items-center space-x-3 w-full px-3 py-3 rounded-md text-sm font-medium text-red-600 hover:bg-muted transition-colors duration-200"
                 >
                   <Icon name="LogOut" size={18} />
-                  <span>Logout</span>
+                  <span>{t('nav.logout')}</span>
                 </button>
 
               </div>

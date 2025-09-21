@@ -2,30 +2,33 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../components/AppIcon';
 import Button from '../components/ui/Button';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '../components/ui/LanguageSwitcher';
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const features = [
     {
       icon: 'Search',
-      title: 'Discover Opportunities',
-      description: 'Find internships tailored to your skills and interests from top companies worldwide.'
+      title: t('landing.features.discover.title'),
+      description: t('landing.features.discover.desc')
     },
     {
       icon: 'ClipboardList',
-      title: 'Track Applications',
-      description: 'Keep track of all your applications in one place with status updates and reminders.'
+      title: t('landing.features.track.title'),
+      description: t('landing.features.track.desc')
     },
     {
       icon: 'BarChart',
-      title: 'Analytics & Insights',
-      description: 'Get insights into your application performance and improve your success rate.'
+      title: t('landing.features.analytics.title'),
+      description: t('landing.features.analytics.desc')
     },
     {
       icon: 'Users',
-      title: 'Community Support',
-      description: 'Connect with fellow students and get advice from experienced professionals.'
+      title: t('landing.features.community.title'),
+      description: t('landing.features.community.desc')
     }
   ];
 
@@ -40,24 +43,25 @@ const Landing = () => {
                 <Icon name="Briefcase" size={20} color="white" />
               </div>
               <span className="text-xl font-semibold text-foreground">
-                InternGuide AI
+                {t('appTitle')}
               </span>
             </div>
             
             <div className="flex items-center space-x-4">
+              <LanguageSwitcher />
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/user-login')}
               >
-                Login
+                {t('nav.login')}
               </Button>
               <Button
                 variant="default"
                 size="sm"
                 onClick={() => navigate('/user-registration')}
               >
-                Sign Up
+                {t('nav.signup')}
               </Button>
             </div>
           </div>
@@ -69,12 +73,11 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Find Your Dream
-              <span className="text-primary block">Internship</span>
+              {t('landing.hero.title1')}
+              <span className="text-primary block">{t('landing.hero.title2')}</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-              Discover thousands of internship opportunities, track your applications, 
-              and land the perfect role to kickstart your career.
+              {t('landing.hero.description')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -83,14 +86,14 @@ const Landing = () => {
                 iconName="ArrowRight"
                 iconPosition="right"
               >
-                Get Started
+                {t('cta.getStarted')}
               </Button>
               <Button
                 variant="outline"
                 size="lg"
                 onClick={() => navigate('/user-login')}
               >
-                Sign In
+                {t('cta.signIn')}
               </Button>
             </div>
           </div>
@@ -102,10 +105,10 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Everything You Need
+              {t('landing.features.title')}
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Our platform provides all the tools you need to find and secure your ideal internship.
+              {t('landing.features.subtitle')}
             </p>
           </div>
           
@@ -134,10 +137,10 @@ const Landing = () => {
       <section className="py-24 bg-primary text-white">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Start Your Journey?
+            {t('landing.cta.title')}
           </h2>
           <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
-            Join thousands of students who have already found their dream internships through our platform.
+            {t('landing.cta.subtitle')}
           </p>
           <Button
             variant="secondary"
@@ -146,7 +149,7 @@ const Landing = () => {
             iconName="ArrowRight"
             iconPosition="right"
           >
-            Create Account
+            {t('cta.createAccount')}
           </Button>
         </div>
       </section>
@@ -160,11 +163,11 @@ const Landing = () => {
                 <Icon name="Briefcase" size={20} color="white" />
               </div>
               <span className="text-xl font-semibold text-foreground">
-                InternGuide AI
+                {t('appTitle')}
               </span>
             </div>
             <p className="text-muted-foreground">
-              © 2024 InternGuide AI. All rights reserved.
+              {t('landing.footer.copyright', { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>

@@ -84,6 +84,9 @@ const UserProfileManagement = () => {
       let update = {};
       if (section === 'personalDetails') {
         update.location = data?.location || '';
+        if (typeof data?.fullName === 'string' && data.fullName) {
+          // name is on root user model in backend; optionally handle later
+        }
       }
       if (section === 'skills') {
         const tech = Array.isArray(data?.techSkills) ? data.techSkills : [];

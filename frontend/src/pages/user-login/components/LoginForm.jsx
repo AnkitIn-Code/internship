@@ -5,6 +5,7 @@ import Button from '../../../components/ui/Button';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import Icon from '../../../components/AppIcon';
 import { authAPI } from '../../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -16,20 +17,21 @@ const LoginForm = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const validateForm = () => {
     const newErrors = {};
 
     if (!formData?.email?.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = t('login.errors.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/?.test(formData?.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = t('login.errors.emailInvalid');
     }
 
     if (!formData?.password?.trim()) {
-      newErrors.password = 'Password is required';
+      newErrors.password = t('login.errors.passwordRequired');
     } else if (formData?.password?.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = t('login.errors.passwordLength');
     }
 
     setErrors(newErrors);
@@ -70,7 +72,7 @@ const LoginForm = () => {
 
       if (!response?.token) {
         setErrors({
-          general: response?.message || 'Invalid email or password. Please check your credentials and try again.'
+          general: response?.message || t('login.errors.invalidCredentials')
         });
         return;
       }
@@ -92,7 +94,7 @@ const LoginForm = () => {
 
     } catch (error) {
       setErrors({
-        general: 'An error occurred during login. Please try again.'
+        general: t('login.errors.generic')
       });
     } finally {
       setIsLoading(false);
@@ -101,7 +103,7 @@ const LoginForm = () => {
 
   const handleForgotPassword = () => {
     // In a real app, this would navigate to forgot password page
-    alert('Forgot password functionality would be implemented here');
+    alert(t('login.forgotPasswordAlert'));
   };
 
   return (
@@ -116,10 +118,10 @@ const LoginForm = () => {
       )}
       <div className="space-y-4">
         <Input
-          label="Email Address"
+          label={t('login.email')}
           type="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder={t('login.emailPlaceholder')}
           value={formData?.email}
           onChange={handleInputChange}
           error={errors?.email}
@@ -129,10 +131,10 @@ const LoginForm = () => {
         />
 
         <Input
-          label="Password"
+          label={t('login.password')}
           type="password"
           name="password"
-          placeholder="Enter your password"
+          placeholder={t('login.passwordPlaceholder')}
           value={formData?.password}
           onChange={handleInputChange}
           error={errors?.password}
@@ -143,7 +145,7 @@ const LoginForm = () => {
       </div>
       <div className="flex items-center justify-between">
         <Checkbox
-          label="Remember me"
+          label={t('login.rememberMe')}
           name="rememberMe"
           checked={formData?.rememberMe}
           onChange={handleInputChange}
@@ -155,7 +157,7 @@ const LoginForm = () => {
           onClick={handleForgotPassword}
           className="text-sm text-primary hover:text-primary/80 transition-colors duration-200"
         >
-          Forgot password?
+          {t('login.forgotPassword')}
         </button>
       </div>
       <Button
@@ -168,7 +170,7 @@ const LoginForm = () => {
         iconName="LogIn"
         iconPosition="left"
       >
-        {isLoading ? 'Signing in...' : 'Sign In'}
+        {isLoading ? t('login.signingIn') : t('login.signIn')}
       </Button>
     </form>
   );

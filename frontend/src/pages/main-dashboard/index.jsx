@@ -9,9 +9,11 @@ import UpcomingDeadlines from './components/UpcomingDeadlines';
 import QuickActions from './components/QuickActions';
 import ActivityFeed from './components/ActivityFeed';
 import { userAPI, internshipAPI, applicationsAPI } from '../../services/api';
+import { useTranslation } from 'react-i18next';
 
 const MainDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [userData, setUserData] = useState({ name: '', profileCompletion: 0, email: '' });
   const [recommendations, setRecommendations] = useState([]);
   const [internships, setInternships] = useState([]);
@@ -202,7 +204,15 @@ const MainDashboard = () => {
                       {internship?.location}
                     </span>
                     <div className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                    {typeof internship?.matchScore === 'number' ? `${Math.min(100, Math.round(internship?.matchScore * 10))}% match` : `${internship?.matchPercentage}% match`}
+                      {(() => {
+                        if (typeof internship?.matchPercentage === 'number') {
+                          return `${Math.min(100, Math.round(internship.matchPercentage))}% ${t('dashboard.recommendations.match')}`;
+                        }
+                        if (typeof internship?.matchScore === 'number') {
+                          return `${Math.min(100, Math.round(internship.matchScore * 100))}% ${t('dashboard.recommendations.match')}`;
+                        }
+                        return '';
+                      })()}
                     </div>
                   </div>
                 </div>

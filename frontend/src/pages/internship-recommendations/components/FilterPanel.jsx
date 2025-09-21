@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import Button from '../../../components/ui/Button';
 import Select from '../../../components/ui/Select';
 import { Checkbox } from '../../../components/ui/Checkbox';
+import { useTranslation } from 'react-i18next';
 
 const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
   const [localFilters, setLocalFilters] = useState(filters);
+  const { t } = useTranslation();
 
   const sectorOptions = [
     { value: 'technology', label: 'Technology' },
@@ -30,17 +32,17 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
   ];
 
   const durationOptions = [
-    { value: '1-3', label: '1-3 months' },
-    { value: '3-6', label: '3-6 months' },
-    { value: '6-12', label: '6-12 months' },
-    { value: '12+', label: '12+ months' }
+    { value: '1-3', label: t('filters.duration.1_3') },
+    { value: '3-6', label: t('filters.duration.3_6') },
+    { value: '6-12', label: t('filters.duration.6_12') },
+    { value: '12+', label: t('filters.duration.12_plus') }
   ];
 
   const stipendRanges = [
-    { value: '0-10000', label: '₹0 - ₹10,000' },
-    { value: '10000-25000', label: '₹10,000 - ₹25,000' },
-    { value: '25000-50000', label: '₹25,000 - ₹50,000' },
-    { value: '50000+', label: '₹50,000+' }
+    { value: '0-10000', label: t('filters.stipend.r0_10') },
+    { value: '10000-25000', label: t('filters.stipend.r10_25') },
+    { value: '25000-50000', label: t('filters.stipend.r25_50') },
+    { value: '50000+', label: t('filters.stipend.r50_plus') }
   ];
 
   const skillOptions = [
@@ -91,7 +93,7 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
           iconPosition="left"
           className="w-full"
         >
-          Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+          {t('filters.toggle')} {activeFilterCount > 0 && `(${activeFilterCount})`}
         </Button>
       </div>
       {/* Filter Panel */}
@@ -104,7 +106,7 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
       `}>
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-foreground">Filters</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t('filters.title')}</h3>
           <Button
             variant="ghost"
             size="sm"
@@ -115,7 +117,7 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
 
         {/* Desktop Header */}
         <div className="hidden lg:flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-foreground">Filter Opportunities</h3>
+          <h3 className="text-lg font-semibold text-foreground">{t('filters.desktopTitle')}</h3>
           {activeFilterCount > 0 && (
             <Button
               variant="ghost"
@@ -123,7 +125,7 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
               onClick={handleClearFilters}
               className="text-destructive hover:text-destructive"
             >
-              Clear All
+              {t('filters.clearAll')}
             </Button>
           )}
         </div>
@@ -132,8 +134,8 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
           {/* Sectors */}
           <div>
             <Select
-              label="Sectors"
-              placeholder="Select sectors"
+              label={t('filters.labels.sectors')}
+              placeholder={t('filters.placeholders.sectors')}
               multiple
               searchable
               clearable
@@ -146,8 +148,8 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
           {/* Locations */}
           <div>
             <Select
-              label="Locations"
-              placeholder="Select locations"
+              label={t('filters.labels.locations')}
+              placeholder={t('filters.placeholders.locations')}
               multiple
               searchable
               clearable
@@ -160,8 +162,8 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
           {/* Duration */}
           <div>
             <Select
-              label="Duration"
-              placeholder="Select duration"
+              label={t('filters.labels.duration')}
+              placeholder={t('filters.placeholders.duration')}
               clearable
               options={durationOptions}
               value={localFilters?.duration}
@@ -172,8 +174,8 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
           {/* Stipend Range */}
           <div>
             <Select
-              label="Stipend Range"
-              placeholder="Select stipend range"
+              label={t('filters.labels.stipendRange')}
+              placeholder={t('filters.placeholders.stipendRange')}
               clearable
               options={stipendRanges}
               value={localFilters?.stipendRange}
@@ -184,8 +186,8 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
           {/* Skills */}
           <div>
             <Select
-              label="Required Skills"
-              placeholder="Select skills"
+              label={t('filters.labels.skills')}
+              placeholder={t('filters.placeholders.skills')}
               multiple
               searchable
               clearable
@@ -197,16 +199,16 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
 
           {/* Additional Options */}
           <div className="space-y-4">
-            <h4 className="text-sm font-medium text-foreground">Additional Options</h4>
+            <h4 className="text-sm font-medium text-foreground">{t('filters.additionalOptions')}</h4>
             
             <Checkbox
-              label="Remote work available"
+              label={t('filters.remoteOnly')}
               checked={localFilters?.remoteOnly}
               onChange={(e) => handleFilterChange('remoteOnly', e?.target?.checked)}
             />
             
             <Checkbox
-              label="Immediate start available"
+              label={t('filters.immediateStart')}
               checked={localFilters?.immediateStart}
               onChange={(e) => handleFilterChange('immediateStart', e?.target?.checked)}
             />
@@ -219,7 +221,7 @@ const FilterPanel = ({ filters, onFiltersChange, isOpen, onToggle }) => {
               fullWidth
               onClick={onToggle}
             >
-              Apply Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+              {t('filters.apply')} {activeFilterCount > 0 && `(${activeFilterCount})`}
             </Button>
           </div>
         </div>

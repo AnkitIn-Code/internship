@@ -1,7 +1,9 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
+import { useTranslation } from 'react-i18next';
 
 const LoginHeader = () => {
+  const { t } = useTranslation();
   return (
     <div className="text-center space-y-4 mb-8">
       {/* Logo */}
@@ -14,16 +16,16 @@ const LoginHeader = () => {
       {/* Welcome Text */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold text-foreground">
-          Welcome Back
+          {t('login.welcome')}
         </h1>
         <p className="text-muted-foreground text-lg">
-          Sign in to your InternGuide AI account
+          {t('login.signInToAccount')}
         </p>
       </div>
 
       {/* Subtitle */}
       <p className="text-sm text-muted-foreground max-w-md mx-auto">
-        Access your personalized internship recommendations and track your applications
+        {t('login.subtitle')}
       </p>
     </div>
   );
