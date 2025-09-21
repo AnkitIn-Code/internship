@@ -28,8 +28,8 @@ export const UserDataProvider = ({ children }) => {
       
       // Get recommendations based on skills
       if (skills.length > 0) {
-        const recs = await internshipAPI.getRecommendations(skills);
-        setRecommendations(recs);
+        const recRes = await internshipAPI.getRecommendations(skills);
+        setRecommendations(recRes?.recommendations || []);
       }
     } catch (error) {
       console.error('Error loading user data:', error);
@@ -45,8 +45,8 @@ export const UserDataProvider = ({ children }) => {
       localStorage.setItem('userSkills', JSON.stringify(newSkills));
       
       // Refresh recommendations
-      const recs = await internshipAPI.getRecommendations(newSkills);
-      setRecommendations(recs);
+  const recRes = await internshipAPI.getRecommendations(newSkills);
+  setRecommendations(recRes?.recommendations || []);
     } catch (error) {
       console.error('Error updating skills:', error);
     }
@@ -55,8 +55,8 @@ export const UserDataProvider = ({ children }) => {
   const refreshRecommendations = async () => {
     if (userSkills.length > 0) {
       try {
-        const recs = await internshipAPI.getRecommendations(userSkills);
-        setRecommendations(recs);
+  const recRes = await internshipAPI.getRecommendations(userSkills);
+  setRecommendations(recRes?.recommendations || []);
       } catch (error) {
         console.error('Error refreshing recommendations:', error);
       }

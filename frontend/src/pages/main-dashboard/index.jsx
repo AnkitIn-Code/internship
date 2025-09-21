@@ -8,7 +8,7 @@ import RecommendationPreview from './components/RecommendationPreview';
 import UpcomingDeadlines from './components/UpcomingDeadlines';
 import QuickActions from './components/QuickActions';
 import ActivityFeed from './components/ActivityFeed';
-import { userAPI, internshipAPI } from '../../services/api';
+import { userAPI, internshipAPI, applicationsAPI } from '../../services/api';
 
 const MainDashboard = () => {
   const navigate = useNavigate();
@@ -30,6 +30,15 @@ const MainDashboard = () => {
 
   const handleViewAllRecommendations = () => {
     navigate('/internship-recommendations');
+  };
+
+  const handleRequestRecommendations = async (payload) => {
+    try {
+      const res = await internshipAPI.getRecommendations(payload);
+      setRecommendations(res?.recommendations || []);
+    } catch (e) {
+      console.error('Get recommendations error', e);
+    }
   };
 
   const handleViewCalendar = () => {
@@ -70,9 +79,13 @@ const MainDashboard = () => {
         // Load internships list
         const allRes = await internshipAPI.getAllInternships();
         setInternships(allRes?.internships || []);
-        // For now, deadlines & activities can be derived or left empty
-        setDeadlines([]);
-        setActivities([]);
+        // Load activities & deadlines from applications
+        const [actRes, dlRes] = await Promise.all([
+          applicationsAPI.recentActivity().catch(() => ({ activities: [] })),
+          applicationsAPI.upcomingDeadlines().catch(() => ({ deadlines: [] })),
+        ]);
+        setActivities(Array.isArray(actRes?.activities) ? actRes.activities : []);
+        setDeadlines(Array.isArray(dlRes?.deadlines) ? dlRes.deadlines : []);
       } catch (e) {
         console.error('Dashboard load error', e);
       }
@@ -124,6 +137,7 @@ const MainDashboard = () => {
             <RecommendationPreview
               recommendations={recommendations}
               onViewAll={handleViewAllRecommendations}
+              onRequestRecommendations={handleRequestRecommendations}
             />
             
             <QuickActions onNavigate={handleNavigate} />

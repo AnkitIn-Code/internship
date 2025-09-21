@@ -1,30 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Button from '../../../components/ui/Button';
 import Image from '../../../components/AppImage';
+import RecommendationFormModal from './RecommendationFormModal';
 import { applicationsAPI } from '../../../services/api';
 
-const RecommendationPreview = ({ recommendations, onViewAll }) => {
-  const upsertFromRecommendation = async (rec, status) => {
-    if (!rec) return;
+const RecommendationPreview = ({ recommendations = [], onViewAll, onRequestRecommendations }) => {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // Helper to choose badge color based on match %
+  const badgeClass = (pct) => {
+    if (pct >= 90) return 'bg-green-100 text-green-700';
+    if (pct >= 75) return 'bg-blue-100 text-blue-700';
+    return 'bg-yellow-100 text-yellow-700';
+  };
+
+  const handleGetRecommendations = async (payload) => {
     try {
-      await applicationsAPI.upsert({
-        title: rec.title,
-        company: rec.company?.name || rec.company,
-        location: rec.location,
-        duration: rec.duration,
-        stipend: rec.stipend,
-        applicationDeadline: rec.applicationDeadline,
-        description: rec.description,
-        status,
-        sourceType: 'recommendation',
-        sourceId: String(rec._id || rec.id || ''),
-      });
-      window.location.href = '/application-tracker';
-    } catch (e) {
-      console.error('Failed to upsert application', e);
+      setLoading(true);
+      await onRequestRecommendations?.(payload);
+      setOpen(false);
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleAction = async (internship, status) => {
+    if (!internship) return;
+    try {
+      await applicationsAPI.upsert({
+        title: internship.title,
+        company: internship.company?.name || internship.company,
+        location: internship.location,
+        duration: internship.duration,
+        stipend: internship.stipend,
+        applicationDeadline: internship.applicationDeadline,
+        description: internship.description,
+        status,
+        sourceType: 'recommendation',
+        sourceId: String(internship.id || `${internship.title}-${internship.company}`),
+      });
+      // Navigate to tracker so user can see it reflected immediately
+      navigate('/application-tracker');
+    } catch (e) {
+      console.error('Failed to upsert application from dashboard recommendations', e);
+    }
+  };
+
   return (
     <div className="bg-card border border-border rounded-lg p-6">
       <div className="flex items-center justify-between mb-6">
@@ -36,67 +61,112 @@ const RecommendationPreview = ({ recommendations, onViewAll }) => {
             AI-powered internship matches based on your profile
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onViewAll}
-          iconName="ArrowRight"
-          iconPosition="right"
-        >
-          View All
-        </Button>
-      </div>
-      <div className="space-y-4">
-        {recommendations?.slice(0, 3)?.map((internship) => (
-          <div
-            key={internship?._id || internship?.id}
-            className="flex items-center space-x-4 p-4 rounded-lg border border-border hover:border-primary/30 hover:bg-muted/50 transition-all duration-200 cursor-pointer"
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setOpen(true)}
+            iconName="Sparkles"
+            iconPosition="left"
           >
-            <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+            Get Recommendation
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onViewAll}
+            iconName="ArrowRight"
+            iconPosition="right"
+          >
+            View All
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {recommendations.slice(0, 3).map((internship) => (
+          <div
+            key={internship.id || `${internship.title}-${internship.company}`}
+            className="flex items-center space-x-4 p-4 rounded-lg border border-border hover:border-primary/30 hover:bg-muted/50 transition-all duration-200"
+          >
+            {/* Company Logo or Placeholder */}
+            <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
               <Image
-                src={internship?.companyLogo || '/assets/images/download.png'}
-                alt={internship?.company || internship?.title}
+                src={internship.companyLogo || '/default-company-logo.png'}
+                alt={internship.company}
                 className="w-full h-full object-cover"
               />
             </div>
-            
+
+            {/* Internship Details */}
             <div className="flex-1 min-w-0">
               <h3 className="font-medium text-foreground truncate">
-                {internship?.title}
+                {internship.title}
               </h3>
               <p className="text-sm text-muted-foreground truncate">
-                {(internship?.company || '—')} • {internship?.location}
+                {internship.company} • {internship.location}
               </p>
               <div className="flex items-center space-x-2 mt-1">
-                <div className="flex items-center space-x-1">
-                  <Icon name="Clock" size={12} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{internship?.duration || '—'}</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Icon name="DollarSign" size={12} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{internship?.stipend || ''}</span>
-                </div>
+                {internship.duration && (
+                  <div className="flex items-center space-x-1">
+                    <Icon name="Clock" size={12} className="text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">
+                      {internship.duration}
+                    </span>
+                  </div>
+                )}
+                {internship.stipend && (
+                  <div className="flex items-center space-x-1">
+                    <Icon name="DollarSign" size={12} className="text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">
+                      {internship.stipend}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
-            
+
+            {/* Actions and Match Percentage */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                (typeof internship?.matchScore === 'number' ? internship?.matchScore >= 9 : internship?.matchPercentage >= 90)
-                  ? 'bg-green-100 text-green-700'
-                  : (typeof internship?.matchScore === 'number' ? internship?.matchScore >= 7.5 : internship?.matchPercentage >= 75)
-                  ? 'bg-blue-100 text-blue-700' :'bg-yellow-100 text-yellow-700'
-              }`}>
-                {typeof internship?.matchScore === 'number' ? `${Math.min(100, Math.round(internship?.matchScore * 10))}% match` : `${internship?.matchPercentage}% match`}
-              </div>
-              {/* Actions */}
-              <Button variant="outline" size="xs" onClick={() => upsertFromRecommendation(internship, 'applied')} iconName="ExternalLink">Apply</Button>
-              <Button variant="outline" size="xs" onClick={() => upsertFromRecommendation(internship, 'under_review')} iconName="Eye">Review</Button>
-              <Button variant="outline" size="xs" onClick={() => upsertFromRecommendation(internship, 'rejected')} iconName="XCircle">Reject</Button>
+              <Button
+                variant="primary"
+                size="xs"
+                onClick={() => handleAction(internship, 'applied')}
+                iconName="Send"
+              >
+                Apply
+              </Button>
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => handleAction(internship, 'under_review')}
+                iconName="Eye"
+              >
+                Review
+              </Button>
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => handleAction(internship, 'rejected')}
+                iconName="XCircle"
+              >
+                Reject
+              </Button>
+              {typeof internship.matchPercentage === 'number' && (
+                <div
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${badgeClass(
+                    internship.matchPercentage
+                  )}`}
+                >
+                  {internship.matchPercentage}% match
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
-      {recommendations?.length === 0 && (
+
+      {recommendations.length === 0 && (
         <div className="text-center py-8">
           <Icon name="Search" size={48} className="mx-auto text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">
@@ -110,6 +180,13 @@ const RecommendationPreview = ({ recommendations, onViewAll }) => {
           </Button>
         </div>
       )}
+
+      <RecommendationFormModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        onSubmit={handleGetRecommendations}
+        loading={loading}
+      />
     </div>
   );
 };

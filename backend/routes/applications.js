@@ -105,3 +105,93 @@ router.patch('/:id', auth, async (req, res) => {
 });
 
 module.exports = router;
+
+// Additional dashboard-friendly endpoints
+
+// GET /api/applications/recent-activity - latest actions/events
+router.get('/recent-activity', auth, async (req, res) => {
+  try {
+    const apps = await Application.find({ user: req.user.id })
+      .sort({ updatedAt: -1 })
+      .limit(20)
+      .lean();
+
+    const activities = [];
+    for (const app of apps) {
+      // status update as activity
+      activities.push({
+        id: `${app._id}-status`,
+        type: app.status === 'offer_received' ? 'offer' : (app.status === 'rejected' ? 'rejection' : (app.status === 'interview_scheduled' ? 'interview' : 'application')),
+        message: `${app.title} at ${app.company} • ${app.status.replace(/_/g, ' ')}`,
+        timestamp: app.updatedAt,
+      });
+
+      // recent notes as activity (latest 1)
+      if (Array.isArray(app.notes) && app.notes.length) {
+        const lastNote = app.notes[app.notes.length - 1];
+        activities.push({
+          id: `${app._id}-note-${app.notes.length}`,
+          type: 'application',
+          message: `Note added to ${app.title}: ${lastNote.content.slice(0, 80)}`,
+          timestamp: lastNote.date || app.updatedAt,
+        });
+      }
+    }
+    // Sort combined by time desc and trim
+    activities.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+    res.json({ activities: activities.slice(0, 20) });
+  } catch (err) {
+    console.error('Recent activity error:', err);
+    res.status(500).json({ message: 'Failed to fetch recent activity' });
+  }
+});
+
+// GET /api/applications/upcoming-deadlines - next application/interview/follow-ups
+router.get('/upcoming-deadlines', auth, async (req, res) => {
+  try {
+    const apps = await Application.find({ user: req.user.id }).lean();
+    const now = new Date();
+    const deadlines = [];
+
+    for (const app of apps) {
+      if (app.applicationDeadline) {
+        deadlines.push({
+          id: `${app._id}-apply`,
+          type: 'application',
+          title: `${app.title} application due`,
+          company: app.company,
+          date: app.applicationDeadline,
+        });
+      }
+      if (app.interviewDate) {
+        deadlines.push({
+          id: `${app._id}-interview`,
+          type: 'interview',
+          title: `${app.title} interview`,
+          company: app.company,
+          date: app.interviewDate,
+        });
+      }
+      if (app.followUpDate) {
+        deadlines.push({
+          id: `${app._id}-follow`,
+          type: 'follow_up',
+          title: `${app.title} follow-up`,
+          company: app.company,
+          date: app.followUpDate,
+        });
+      }
+    }
+
+    // future first, then closest
+    const upcoming = deadlines
+      .filter(d => new Date(d.date) >= now)
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(0, 20);
+
+    res.json({ deadlines: upcoming });
+  } catch (err) {
+    console.error('Upcoming deadlines error:', err);
+    res.status(500).json({ message: 'Failed to fetch upcoming deadlines' });
+  }
+});

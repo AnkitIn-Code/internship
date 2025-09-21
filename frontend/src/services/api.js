@@ -113,6 +113,34 @@ export const currentUserAPI = {
 export const internshipAPI = {
   getRecommendations: async (filters = {}) => {
     const token = localStorage.getItem('authToken');
+    // Normalize inputs: accept array of skills or various object shapes
+    let sector = '';
+    let location = '';
+    let tech = '';
+
+    try {
+      if (Array.isArray(filters)) {
+        // Treat as skills array
+        tech = filters.filter(Boolean).join(', ');
+      } else if (filters && typeof filters === 'object') {
+        sector = typeof filters.sector === 'string' ? filters.sector : '';
+        // If sectors array provided, use the first as primary sector
+        if (!sector && Array.isArray(filters.sectors) && filters.sectors.length) {
+          sector = String(filters.sectors[0] ?? '');
+        }
+
+        location = typeof filters.location === 'string' ? filters.location : '';
+        if (!location && Array.isArray(filters.locations) && filters.locations.length) {
+          location = String(filters.locations[0] ?? '');
+        }
+
+        tech = typeof filters.tech === 'string' ? filters.tech : '';
+        if (!tech && Array.isArray(filters.skills)) {
+          tech = filters.skills.filter(Boolean).join(', ');
+        }
+      }
+    } catch {}
+
     // Call POST /api/recommendations with sector, location, tech
     const response = await fetch(`${API_BASE_URL}/recommendations`, {
       method: 'POST',
@@ -120,11 +148,7 @@ export const internshipAPI = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        sector: filters.sector || '',
-        location: filters.location || '',
-        tech: filters.tech || '',
-      }),
+      body: JSON.stringify({ sector, location, tech }),
     });
     return response.json();
   },
@@ -148,6 +172,26 @@ export const applicationsAPI = {
   list: async () => {
     const token = localStorage.getItem('authToken');
     const response = await fetch(`${API_BASE_URL}/applications`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+  recentActivity: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/applications/recent-activity`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+  upcomingDeadlines: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/applications/upcoming-deadlines`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',

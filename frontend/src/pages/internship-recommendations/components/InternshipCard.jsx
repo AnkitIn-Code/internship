@@ -65,9 +65,7 @@ const InternshipCard = ({ internship, onApply, onSave, onViewDetails, onAction }
         </div>
 
         <div className="flex items-center space-x-2 shrink-0">
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${getMatchColor(internship?.matchPercentage)}`}>
-            {internship?.matchPercentage}% match
-          </div>
+          
           <Button
             variant="ghost"
             size="sm"
