@@ -164,6 +164,18 @@ export const internshipAPI = {
     return response.json();
   },
 
+  // Discover internships from CSV (fallback/feed)
+  getDiscoverInternships: async () => {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_BASE_URL}/internships/discover`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.json();
+  },
+
   // No apply endpoint in backend currently
 };
 

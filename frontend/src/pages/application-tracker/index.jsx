@@ -123,7 +123,7 @@ const ApplicationTracker = () => {
 
   // Set page title
   useEffect(() => {
-    document.title = 'Application Tracker - InternshipHub';
+    document.title = 'Application Tracker - InternGuide AI';
   }, []);
 
   // Load applications

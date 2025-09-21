@@ -15,10 +15,11 @@ const MainDashboard = () => {
   const [userData, setUserData] = useState({ name: '', profileCompletion: 0, email: '' });
   const [recommendations, setRecommendations] = useState([]);
   const [internships, setInternships] = useState([]);
+  const [internshipCount, setInternshipCount] = useState(0);
   const [deadlines, setDeadlines] = useState([]);
   const [activities, setActivities] = useState([]);
   const applicationStats = [
-    { title: 'Internships Available', value: String(internships?.length || 0), icon: 'Briefcase', color: 'blue', trend: { type: 'up', value: '' } },
+    { title: 'Internships Available', value: String(internshipCount || internships?.length || 0), icon: 'Briefcase', color: 'blue', trend: { type: 'up', value: '' } },
     { title: 'Skills Added', value: String((userData?.profile?.skills || []).length), icon: 'Code', color: 'yellow', trend: { type: 'up', value: '' } },
     { title: 'Sector', value: userData?.profile?.sector || '—', icon: 'Building2', color: 'purple', trend: { type: 'up', value: '' } },
     { title: 'Location', value: userData?.profile?.location || '—', icon: 'MapPin', color: 'green', trend: { type: 'up', value: '' } },
@@ -76,9 +77,21 @@ const MainDashboard = () => {
         // Load recommendations (requires profile)
         const recRes = await internshipAPI.getRecommendations();
         setRecommendations(recRes?.recommendations || []);
-        // Load internships list
-        const allRes = await internshipAPI.getAllInternships();
-        setInternships(allRes?.internships || []);
+        // Load internships list (prefer DB, fallback to discover CSV)
+        let allRes = await internshipAPI.getAllInternships().catch(() => null);
+        let list = Array.isArray(allRes?.internships) ? allRes.internships : [];
+        let count = typeof allRes?.count === 'number' ? allRes.count : list.length;
+
+        if (!list.length) {
+          const discoverRes = await internshipAPI.getDiscoverInternships().catch(() => null);
+          const dList = Array.isArray(discoverRes?.internships) ? discoverRes.internships : [];
+          const dCount = typeof discoverRes?.count === 'number' ? discoverRes.count : dList.length;
+          list = dList;
+          count = dCount;
+        }
+
+        setInternships(list);
+        setInternshipCount(count);
         // Load activities & deadlines from applications
         const [actRes, dlRes] = await Promise.all([
           applicationsAPI.recentActivity().catch(() => ({ activities: [] })),

@@ -36,7 +36,7 @@ const AuthFooter = () => {
       </div>
       {/* Copyright */}
       <div className="text-center text-sm text-muted-foreground">
-        <p>© {new Date()?.getFullYear()} InternshipHub. All rights reserved.</p>
+  <p>© {new Date()?.getFullYear()} InternGuide AI. All rights reserved.</p>
       </div>
     </div>
   );

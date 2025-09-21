@@ -40,7 +40,7 @@ const Landing = () => {
                 <Icon name="Briefcase" size={20} color="white" />
               </div>
               <span className="text-xl font-semibold text-foreground">
-                InternshipHub
+                InternGuide AI
               </span>
             </div>
             
@@ -160,11 +160,11 @@ const Landing = () => {
                 <Icon name="Briefcase" size={20} color="white" />
               </div>
               <span className="text-xl font-semibold text-foreground">
-                InternshipHub
+                InternGuide AI
               </span>
             </div>
             <p className="text-muted-foreground">
-              © 2024 InternshipHub. All rights reserved.
+              © 2024 InternGuide AI. All rights reserved.
             </p>
           </div>
         </div>

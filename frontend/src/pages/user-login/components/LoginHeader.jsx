@@ -17,7 +17,7 @@ const LoginHeader = () => {
           Welcome Back
         </h1>
         <p className="text-muted-foreground text-lg">
-          Sign in to your InternshipHub account
+          Sign in to your InternGuide AI account
         </p>
       </div>
 

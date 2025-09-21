@@ -17,7 +17,7 @@ const AuthHeader = () => {
             <Icon name="Briefcase" size={28} color="white" />
           </div>
           <span className="text-2xl font-bold text-foreground">
-            InternshipHub
+            InternGuide AI
           </span>
         </button>
       </div>

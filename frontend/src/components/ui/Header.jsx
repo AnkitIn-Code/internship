@@ -70,7 +70,7 @@ const Header = () => {
                 <Icon name="Briefcase" size={20} color="white" />
               </div>
               <span className="text-xl font-semibold text-foreground">
-                InternshipHub
+                InternGuide AI
               </span>
             </button>
           </div>

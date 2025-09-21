@@ -15,8 +15,8 @@ const UserRegistration = () => {
   return (
     <>
       <Helmet>
-        <title>Create Account - InternshipHub</title>
-        <meta name="description" content="Join InternshipHub and discover your perfect internship with AI-powered recommendations. Create your free account today." />
+  <title>Create Account - InternGuide AI</title>
+  <meta name="description" content="Join InternGuide AI and discover your perfect internship with AI-powered recommendations. Create your free account today." />
         <meta name="keywords" content="internship, registration, student account, career, AI matching" />
       </Helmet>
 

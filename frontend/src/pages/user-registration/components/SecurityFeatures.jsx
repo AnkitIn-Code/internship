@@ -23,7 +23,7 @@ const SecurityFeatures = () => {
   return (
     <div className="bg-muted/30 rounded-lg p-6 space-y-4">
       <h3 className="text-lg font-semibold text-foreground text-center">
-        Why Choose InternshipHub?
+  Why Choose InternGuide AI?
       </h3>
       <div className="space-y-4">
         {securityFeatures?.map((feature, index) => (

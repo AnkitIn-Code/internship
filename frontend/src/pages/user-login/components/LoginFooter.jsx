@@ -18,7 +18,7 @@ const LoginFooter = () => {
         </div>
         <div className="relative flex justify-center text-sm">
           <span className="px-4 bg-background text-muted-foreground">
-            New to InternshipHub?
+            New to InternGuide AI?
           </span>
         </div>
       </div>
