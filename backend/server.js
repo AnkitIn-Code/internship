@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const connectDB = require('./config/db');
 require('dotenv').config();
 
@@ -26,18 +25,6 @@ app.use('/api/applications', require('./routes/applications'));
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Server is running!', status: 'OK' });
 });
-
-// Serve frontend build (single-command run)
-const FRONTEND_BUILD_DIR = path.resolve(__dirname, '../frontend/build');
-if (process.env.SERVE_FRONTEND !== 'false') {
-  app.use(express.static(FRONTEND_BUILD_DIR));
-
-  // Fallback to index.html for non-API routes
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    res.sendFile(path.join(FRONTEND_BUILD_DIR, 'index.html'));
-  });
-}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
